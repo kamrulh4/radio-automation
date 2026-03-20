@@ -1,55 +1,73 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, CloudRain, Newspaper, Car } from 'lucide-react';
+import { Download, CloudRain, Newspaper, Car, CheckCircle2, RotateCw } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { triggerDownload } from '../api';
 
 const DownloadPanel = ({ station }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(null);
-  const [message, setMessage] = useState('');
+  const [results, setResults] = useState({});
 
   const handleTrigger = async (type) => {
     setLoading(type);
-    setMessage('');
     try {
       await triggerDownload(type, station);
-      setMessage(`${t('success')}: ${type}`);
+      setResults(prev => ({ ...prev, [type]: 'success' }));
+      setTimeout(() => setResults(prev => ({ ...prev, [type]: null })), 5000);
     } catch (err) {
-      setMessage(t('error'));
+      setResults(prev => ({ ...prev, [type]: 'error' }));
     } finally {
       setLoading(null);
     }
   };
 
   const types = [
-    { id: 'meteo', icon: <CloudRain />, label: t('trigger_meteo') },
-    { id: 'news', icon: <Newspaper />, label: t('trigger_news') },
-    { id: 'traffic', icon: <Car />, label: t('trigger_traffic') },
+    { id: 'meteo', icon: <CloudRain size={20} />, label: t('trigger_meteo'), color: 'text-blue-400', bg: 'bg-blue-400/10' },
+    { id: 'news', icon: <Newspaper size={20} />, label: t('trigger_news'), color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+    { id: 'traffic', icon: <Car size={20} />, label: t('trigger_traffic'), color: 'text-amber-400', bg: 'bg-amber-400/10' },
   ];
 
   return (
-    <div className="glass p-6 space-y-4">
-      <h2 className="text-xl font-bold flex items-center gap-2">
-        <Download className="text-primary" /> {t('downloads_title')}
+    <div className="glass-card p-8">
+      <h2 className="text-2xl font-bold flex items-center gap-3 mb-8">
+        <div className="p-2 bg-pink-500/20 rounded-lg text-pink-400">
+          <Download size={24} />
+        </div>
+        {t('downloads_title')}
       </h2>
 
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {types.map(type => (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             key={type.id}
             onClick={() => handleTrigger(type.id)}
             disabled={loading === type.id}
-            className="flex items-center justify-between p-3 rounded-md bg-bg-card hover:bg-slate-700 transition-colors border border-border disabled:opacity-50"
+            className={`flex flex-col items-center justify-center p-6 rounded-2xl border transition-all relative overflow-hidden ${
+              results[type.id] === 'success' 
+                ? 'border-emerald-500/50 bg-emerald-500/5' 
+                : results[type.id] === 'error'
+                ? 'border-red-500/50 bg-red-500/5'
+                : 'border-border bg-white/5 hover:bg-white/10'
+            }`}
           >
-            <div className="flex items-center gap-3">
-              <span className="text-primary">{type.icon}</span>
-              <span>{type.label}</span>
+            <div className={`p-3 rounded-xl mb-3 ${type.bg} ${type.color}`}>
+              {loading === type.id ? <RotateCw className="animate-spin" size={20} /> : type.icon}
             </div>
-            {loading === type.id && <span className="text-xs animate-pulse">Running...</span>}
-          </button>
+            <span className="text-xs font-bold tracking-tight text-center leading-tight">
+              {type.label}
+            </span>
+
+            {results[type.id] === 'success' && (
+              <div className="absolute top-2 right-2 text-emerald-500">
+                <CheckCircle2 size={14} />
+              </div>
+            )}
+          </motion.button>
         ))}
       </div>
-      {message && <p className="text-sm text-green-400">{message}</p>}
     </div>
   );
 };
