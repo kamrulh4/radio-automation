@@ -49,7 +49,7 @@ const FileList = ({ station }) => {
   };
 
   return (
-    <div className="glass-card flex flex-col h-full h-[calc(100vh-180px)]">
+    <div className="glass-card flex flex-col h-main-list">
       <div className="p-8 border-b border-border bg-white/5 flex items-center justify-between">
         <h2 className="text-2xl font-bold flex items-center gap-3">
           <div className="p-2 bg-secondary/20 rounded-lg text-secondary">

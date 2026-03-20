@@ -74,8 +74,8 @@ function App() {
             </button>
           </form>
 
-          <button onClick={toggleLanguage} className="mt-8 w-full flex items-center justify-center gap-2 text-dim hover:text-white transition-colors">
-            <Globe size={16} /> {i18n.language === 'it' ? 'English Language' : 'Lingua Italiana'}
+          <button onClick={toggleLanguage} className="mt-8 nav-pill w-full justify-center">
+            <Globe size={16} className="text-primary" /> {i18n.language === 'it' ? 'English Language' : 'Lingua Italiana'}
           </button>
         </motion.div>
       </div>
@@ -95,26 +95,24 @@ function App() {
               <span className="text-[10px] text-dim font-semibold uppercase tracking-widest">Control Center v1.0</span>
             </div>
           </div>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl border border-border">
-              <span className="text-xs font-bold text-dim uppercase tracking-tighter">Station</span>
+          <div className="flex items-center gap-4">
+            <div className="nav-pill">
+              <span className="text-[10px] font-bold text-dim uppercase tracking-tighter">Station</span>
               <select 
                 value={station} 
                 onChange={(e) => setStation(e.target.value)}
-                className="bg-transparent border-none focus:ring-0 cursor-pointer font-bold text-sm outline-none"
+                className="nav-select"
               >
-                {stations.map(s => <option key={s} value={s} className="bg-slate-900">{s.replace('_', ' ')}</option>)}
+                {stations.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
               </select>
             </div>
-            <div className="flex items-center gap-2 border-l border-border pl-6">
-              <button onClick={toggleLanguage} className="p-2 hover:bg-white/5 rounded-xl transition-colors relative group">
-                <Globe size={20} className="text-dim group-hover:text-white" />
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-slate-800 text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-border">
-                  {i18n.language === 'it' ? 'English' : 'Italiano'}
-                </span>
+            <div className="flex items-center gap-2 border-l border-border pl-4">
+              <button onClick={toggleLanguage} className="nav-pill">
+                <Globe size={18} className="text-primary" />
+                <span className="text-xs font-bold">{i18n.language === 'it' ? 'English' : 'Italiano'}</span>
               </button>
-              <button onClick={handleLogout} className="p-2 hover:bg-red-500/10 rounded-xl transition-colors text-red-400">
-                <LogOut size={20} />
+              <button onClick={handleLogout} className="nav-icon-btn red">
+                <LogOut size={18} />
               </button>
             </div>
           </div>
@@ -135,7 +133,7 @@ function App() {
             initial={{ x: 20, opacity: 0 }} 
             animate={{ x: 0, opacity: 1 }} 
             transition={{ delay: 0.2 }}
-            className="h-full"
+            className="h-main-list"
           >
             <FileList station={station} />
           </motion.div>
