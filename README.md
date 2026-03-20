@@ -39,3 +39,16 @@ The dashboard will be available at `http://localhost:5173`.
 - Automated downloads (Meteo, News, Traffic).
 - Dual-language (EN/IT) web dashboard.
 - Drag & Drop file uploads.
+
+## 🚀 Project Status (Phase 1)
+The current version is a **fully functional Proof of Concept** ready for VPS deployment. 
+- Integrated with ElevenLabs for TTS.
+- Automated News, Meteo, and Traffic download service.
+- Multi-station scoped storage.
+
+## 📈 Phase 2 Roadmap (Recommended)
+To scale this into an industrial-grade platform, the following steps are recommended:
+1. **Database Integration**: Replace `.env` with a database (SQLite/PostgreSQL) to manage stations and voice settings dynamically.
+2. **Role-Based Access Control (RBAC)**: Implement separate logins for Admin and DJs.
+3. **Execution Logs**: UI for monitoring automated task history.
+4. **Per-Station Scheduling**: Customize download intervals for each station.
