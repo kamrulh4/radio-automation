@@ -1,0 +1,77 @@
+import httpx
+import os
+import subprocess
+from datetime import datetime
+from typing import Optional
+from .file_service import FileService
+from ..core.config import settings
+
+class DownloadService:
+    """Handles logic for automated batch downloads from external providers"""
+    
+    def __init__(self):
+        self.file_service = FileService()
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+        self.client = httpx.Client(verify=False, timeout=60.0, headers=headers) # --no-check-certificate equivalent
+        
+    def download_meteo(self, station: str = "Radio_Garda"):
+        """Downloads METEO from 3B Meteo"""
+        date_str = datetime.now().strftime("%Y%m%d")
+        # Example URL from batch file
+        url = f"https://radio.3bmeteo.com/radiogarda/{date_str}.mp3"
+        
+        try:
+            response = self.client.get(url)
+            if response.status_code == 200:
+                self.file_service.save_audio(response.content, station, "meteoggi.mp3", is_public=True)
+                return True
+            return False
+        except Exception as e:
+            print(f"Meteo download failed: {str(e)}")
+            return False
+            
+    def download_news(self, station: str = "Radio_Garda"):
+        """Downloads NEWS from AllNews.fm"""
+        # Logic from Automate-File-Downloads.ps1
+        now = datetime.now()
+        date_str = now.strftime("%y_%m_%d")
+        
+        # Last 40-minute slot logic
+        hour = now.hour
+        minute = now.minute
+        
+        if minute < 45:
+            last_hour = hour - 1
+        else:
+            last_hour = hour
+            
+        time_slot = f"{last_hour:02d}40"
+        filename = f"{date_str}_BIANCA2_edizione{time_slot}.mp3"
+        url = f"https://allnews.fm/radioweb/gr-lite/{filename}"
+        
+        # Basic Auth: vivalaradio2 / Viva1
+        auth = ("vivalaradio2", "Viva1")
+        
+        try:
+            response = self.client.get(url, auth=auth)
+            if response.status_code == 200:
+                self.file_service.save_audio(response.content, station, "AREA24.mp3", is_public=True)
+                return True
+            return False
+        except Exception as e:
+            print(f"News download failed: {str(e)}")
+            return False
+
+    def download_traffic_lombardia(self, station: str = "Radio_Garda"):
+        """Downloads Traffic for Lombardia"""
+        url = "https://publisher.luceverde.it/not/newsPublished/Luceverde%20Milano%20audio/audio/D/MWoPCIExMl3JkmrUIDXvhkoacPor21LdlRcTxMl3JkoUJIZnABOFnxrgVsgMl32MWoPCIExMl3JkmrUIDXvhkoacPor21LdlRcTxMl3JkoUJIZnABOFnxrgVsgMl32"
+        
+        try:
+            response = self.client.get(url)
+            if response.status_code == 200:
+                self.file_service.save_audio(response.content, station, "lombtraf.mp3", is_public=True)
+                return True
+            return False
+        except Exception as e:
+            print(f"Traffic download failed: {str(e)}")
+            return False
