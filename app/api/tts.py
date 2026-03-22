@@ -5,6 +5,7 @@ from .auth import get_current_user
 from ..services.elevenlabs_service import ElevenLabsService
 from ..services.file_service import FileService
 from ..core.config import settings
+import os
 
 router = APIRouter()
 elevenlabs = ElevenLabsService()

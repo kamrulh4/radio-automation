@@ -25,9 +25,9 @@ async def trigger_download(type: str, station: str = "Radio_Garda", current_user
         raise HTTPException(status_code=400, detail="Invalid download type")
         
     if not success:
-        raise HTTPException(status_code=500, detail="Download failed")
+        return {"status": "error", "message": f"Source file for {type} could not be reached. It might not be available yet for today's date."}
         
-    return {"status": "success", "message": f"{type} download triggered and completed"}
+    return {"status": "success", "message": f"{type} download completed successfully"}
 
 @router.get("/list/{station}")
 async def list_files(station: str, current_user: str = Depends(get_current_user)):

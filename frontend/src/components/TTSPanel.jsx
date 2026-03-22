@@ -58,8 +58,8 @@ const TTSPanel = ({ station }) => {
         
         {usage && (
           <div className="w-48 text-right">
-            <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
-              <span className="text-dim">ElevenLabs Usage</span>
+            <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-1 gap-2">
+              <span className="text-dim whitespace-nowrap">ElevenLabs Usage</span>
               <span className={usagePercent > 80 ? 'text-red-400' : 'text-indigo-400'}>
                 {Math.round(usagePercent)}%
               </span>
