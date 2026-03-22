@@ -12,6 +12,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [station, setStation] = useState('Radio_Garda');
   const [stations] = useState(['Radio_Garda', 'Radio_105']);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -122,7 +123,7 @@ function App() {
       <main className="max-w-7xl mx-auto p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-7 space-y-8">
           <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-            <TTSPanel station={station} />
+            <TTSPanel station={station} onGenerateSuccess={() => setRefreshKey(prev => prev + 1)} />
           </motion.div>
           <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
             <DownloadPanel station={station} />
@@ -135,7 +136,7 @@ function App() {
             transition={{ delay: 0.2 }}
             className="h-main-list"
           >
-            <FileList station={station} />
+            <FileList station={station} key={refreshKey} />
           </motion.div>
         </div>
       </main>

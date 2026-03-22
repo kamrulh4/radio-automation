@@ -4,7 +4,7 @@ import { Mic, Send, Sparkles, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getVoices, getUsage, generateTTS } from '../api';
 
-const TTSPanel = ({ station }) => {
+const TTSPanel = ({ station, onGenerateSuccess }) => {
   const { t } = useTranslation();
   const [text, setText] = useState('');
   const [voices, setVoices] = useState([]);
@@ -37,6 +37,7 @@ const TTSPanel = ({ station }) => {
       setStatus({ type: 'success', msg: t('success') });
       setText('');
       loadData();
+      if (onGenerateSuccess) onGenerateSuccess();
     } catch (err) {
       setStatus({ type: 'error', msg: t('error') });
     } finally {

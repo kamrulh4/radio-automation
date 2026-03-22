@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional, Dict, List
 from .auth import get_current_user
@@ -15,7 +16,7 @@ class TTSRequest(BaseModel):
     text: str
     voice_name: str
     station: str
-    filename: Optional[str] = "news"
+    filename: Optional[str] = None
     stability: float = 0.5
     similarity: float = 0.5
 
@@ -44,11 +45,18 @@ async def generate_tts(request: TTSRequest, current_user: str = Depends(get_curr
             similarity=request.similarity
         )
         
+        # Generate unique filename if not provided
+        if not request.filename:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            final_filename = f"tts_{timestamp}"
+        else:
+            final_filename = request.filename
+            
         # Save to public folder for RadioDJ
         filepath = file_service.save_audio(
             audio_data=audio_content,
             station=request.station,
-            filename=request.filename,
+            filename=final_filename,
             is_public=True
         )
         
