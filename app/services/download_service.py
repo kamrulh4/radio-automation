@@ -11,8 +11,12 @@ class DownloadService:
     
     def __init__(self):
         self.file_service = FileService()
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
-        self.client = httpx.Client(verify=False, timeout=60.0, headers=headers) # --no-check-certificate equivalent
+        self.headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Accept": "audio/mpeg,audio/*;q=0.9,*/*;q=0.8",
+            "Referer": "https://allnews.fm/"
+        }
+        self.client = httpx.Client(verify=False, timeout=60.0, headers=self.headers)
         
     def download_meteo(self, station: str = "Radio_Garda"):
         """Downloads METEO from 3B Meteo"""
@@ -54,14 +58,32 @@ class DownloadService:
         # Basic Auth: vivalaradio2 / Viva1
         auth = ("vivalaradio2", "Viva1")
         
+        # Attempt download with fallback
+        success = self._try_download_news(station, url, auth)
+        
+        if not success:
+            # Fallback to previous slot
+            prev_hour = last_hour - 1
+            if prev_hour < 0: prev_hour = 23
+            time_slot = f"{prev_hour:02d}40"
+            filename = f"{date_str}_BIANCA2_edizione{time_slot}.mp3"
+            url = f"https://allnews.fm/radioweb/gr-lite/{filename}"
+            print(f"Current news missing, falling back to: {url}")
+            success = self._try_download_news(station, url, auth)
+            
+        return success
+
+    def _try_download_news(self, station: str, url: str, auth: tuple):
         try:
+            print(f"Attempting news download: {url}")
             response = self.client.get(url, auth=auth)
+            print(f"News response status: {response.status_code}")
             if response.status_code == 200:
-                self.file_service.save_audio(response.content, station, "news.mp3", is_public=True)
+                self.file_service.save_audio(response.content, station, "AREA24.mp3", is_public=True)
                 return True
             return False
         except Exception as e:
-            print(f"News download failed: {str(e)}")
+            print(f"News download connection error: {str(e)}")
             return False
 
     def download_traffic_lombardia(self, station: str = "Radio_Garda"):

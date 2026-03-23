@@ -12,9 +12,13 @@ const DownloadPanel = ({ station, onDownloadSuccess }) => {
   const handleTrigger = async (type) => {
     setLoading(type);
     try {
-      await triggerDownload(type, station);
-      setResults(prev => ({ ...prev, [type]: 'success' }));
-      if (onDownloadSuccess) onDownloadSuccess();
+      const res = await triggerDownload(type, station);
+      if (res.data.status === 'success') {
+        setResults(prev => ({ ...prev, [type]: 'success' }));
+        if (onDownloadSuccess) onDownloadSuccess();
+      } else {
+        setResults(prev => ({ ...prev, [type]: 'error' }));
+      }
       setTimeout(() => setResults(prev => ({ ...prev, [type]: null })), 5000);
     } catch (err) {
       setResults(prev => ({ ...prev, [type]: 'error' }));
