@@ -5,7 +5,10 @@ from typing import Optional, Dict, List
 from .auth import get_current_user
 from ..services.elevenlabs_service import ElevenLabsService
 from ..services.file_service import FileService
-from ..core.config import settings
+from ..db.models import User as DBUser, Station as DBStation
+from ..db.database import get_db
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 import os
 
 router = APIRouter()
@@ -29,8 +32,9 @@ async def get_usage(current_user: str = Depends(get_current_user)):
     return elevenlabs.get_user_subscription()
 
 @router.post("/generate")
-async def generate_tts(request: TTSRequest, current_user: str = Depends(get_current_user)):
-    if request.station not in settings.STATIONS:
+async def generate_speech(request: TTSRequest, current_user: DBUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(DBStation).where(DBStation.name == request.station))
+    if not result.scalars().first():
         raise HTTPException(status_code=400, detail="Invalid station")
         
     voice = elevenlabs.get_voice_by_name(request.voice_name)
