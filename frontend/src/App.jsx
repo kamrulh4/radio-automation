@@ -126,7 +126,7 @@ function App() {
             <TTSPanel station={station} onGenerateSuccess={() => setRefreshKey(prev => prev + 1)} />
           </motion.div>
           <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
-            <DownloadPanel station={station} />
+            <DownloadPanel station={station} onDownloadSuccess={() => setRefreshKey(prev => prev + 1)} />
           </motion.div>
         </div>
         <div className="lg:col-span-5">

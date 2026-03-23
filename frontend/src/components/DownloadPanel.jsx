@@ -4,7 +4,7 @@ import { Download, CloudRain, Newspaper, Car, CheckCircle2, RotateCw } from 'luc
 import { motion } from 'framer-motion';
 import { triggerDownload } from '../api';
 
-const DownloadPanel = ({ station }) => {
+const DownloadPanel = ({ station, onDownloadSuccess }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(null);
   const [results, setResults] = useState({});
@@ -14,6 +14,7 @@ const DownloadPanel = ({ station }) => {
     try {
       await triggerDownload(type, station);
       setResults(prev => ({ ...prev, [type]: 'success' }));
+      if (onDownloadSuccess) onDownloadSuccess();
       setTimeout(() => setResults(prev => ({ ...prev, [type]: null })), 5000);
     } catch (err) {
       setResults(prev => ({ ...prev, [type]: 'error' }));

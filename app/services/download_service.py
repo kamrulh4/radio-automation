@@ -55,7 +55,7 @@ class DownloadService:
         try:
             response = self.client.get(url, auth=auth)
             if response.status_code == 200:
-                self.file_service.save_audio(response.content, station, "AREA24.mp3", is_public=True)
+                self.file_service.save_audio(response.content, station, "news.mp3", is_public=True)
                 return True
             return False
         except Exception as e:
