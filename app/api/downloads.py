@@ -25,7 +25,10 @@ async def trigger_download(type: str, station: str = "Radio_Garda", current_user
         raise HTTPException(status_code=400, detail="Invalid download type")
         
     if not success:
-        return {"status": "error", "message": f"Source file for {type} could not be reached. It might not be available yet for today's date."}
+         return {
+             "status": "error", 
+             "message": f"Source file for {type} is currently unavailable for station {station}. It might not be uploaded yet by the provider."
+         }
         
     return {"status": "success", "message": f"{type} download completed successfully"}
 

@@ -59,7 +59,9 @@ const FileList = ({ station }) => {
         </h2>
         <button 
           onClick={fetchFiles} 
-          className="p-2 hover:bg-white/10 rounded-xl text-dim hover:text-white transition-colors"
+          disabled={loading}
+          className="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-white/70 hover:text-white transition-all active:scale-95 disabled:opacity-50"
+          title={t('refresh_files')}
         >
           <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
         </button>

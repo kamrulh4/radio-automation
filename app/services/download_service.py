@@ -16,8 +16,10 @@ class DownloadService:
         
     def download_meteo(self, station: str = "Radio_Garda"):
         """Downloads METEO from 3B Meteo"""
-        date_str = datetime.now().strftime("%Y%m%d")
-        # Example URL from batch file
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        # Example URL from batch file: https://radio.3bmeteo.com/radiogarda/2026-03-23.mp3
+        # Use 'radiogarda' as the path segment for all stations since they share the feed for now,
+        # or customize per station if they have different feeds.
         url = f"https://radio.3bmeteo.com/radiogarda/{date_str}.mp3"
         
         try:
