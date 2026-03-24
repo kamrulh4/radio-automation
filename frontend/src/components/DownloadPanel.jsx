@@ -34,10 +34,10 @@ const DownloadPanel = ({ station, onDownloadSuccess }) => {
   ];
 
   return (
-    <div className="glass-card p-8">
-      <h2 className="text-2xl font-bold flex items-center gap-3 mb-8">
+    <div className="glass-card p-6">
+      <h2 className="text-xl font-bold flex items-center gap-3 mb-6">
         <div className="p-2 bg-pink-500/20 rounded-lg text-pink-400">
-          <Download size={24} />
+          <Download size={20} />
         </div>
         {t('downloads_title')}
       </h2>
@@ -50,7 +50,7 @@ const DownloadPanel = ({ station, onDownloadSuccess }) => {
             key={type.id}
             onClick={() => handleTrigger(type.id)}
             disabled={loading === type.id}
-            className={`flex flex-col items-center justify-center p-6 rounded-2xl border transition-all relative overflow-hidden ${
+            className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all relative overflow-hidden ${
               results[type.id] === 'success' 
                 ? 'border-emerald-500/50 bg-emerald-500/5' 
                 : results[type.id] === 'error'
@@ -58,7 +58,7 @@ const DownloadPanel = ({ station, onDownloadSuccess }) => {
                 : 'border-border bg-white/5 hover:bg-white/10'
             }`}
           >
-            <div className={`p-3 rounded-xl mb-3 ${type.bg} ${type.color}`}>
+            <div className={`p-2 rounded-lg mb-2 ${type.bg} ${type.color}`}>
               {loading === type.id ? <RotateCw className="animate-spin" size={20} /> : type.icon}
             </div>
             <span className="text-xs font-bold tracking-tight text-center leading-tight">

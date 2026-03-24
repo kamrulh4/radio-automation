@@ -48,25 +48,25 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
   const usagePercent = usage ? (usage.character_count / usage.character_limit) * 100 : 0;
 
   return (
-    <div className="glass-card p-8 relative overflow-hidden">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold flex items-center gap-3">
+    <div className="glass-card p-6 relative overflow-hidden">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold flex items-center gap-3">
           <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">
-            <Mic size={24} />
+            <Mic size={20} />
           </div>
           {t('tts_title')}
         </h2>
-        
+
         {usage && (
           <div className="w-48 text-right">
             <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-1 gap-2">
               <span className="text-dim whitespace-nowrap">ElevenLabs Usage</span>
-              <span className={usagePercent > 80 ? 'text-red-400' : 'text-indigo-400'}>
+              <span className={usagePercent > 80 ? 'text-red-600' : 'text-indigo-600'}>
                 {Math.round(usagePercent)}%
               </span>
             </div>
             <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-              <motion.div 
+              <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${usagePercent}%` }}
                 className={`h-full ${usagePercent > 80 ? 'bg-red-500' : 'bg-indigo-500'}`}
@@ -79,8 +79,8 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
         )}
       </div>
 
-      <form onSubmit={handleGenerate} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleGenerate} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="label">Select Voice</label>
             <select value={voice} onChange={(e) => setVoice(e.target.value)} className="input-field">
@@ -92,8 +92,8 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
         <div className="space-y-2">
           <label className="label">{t('text_input')}</label>
           <div className="relative">
-            <textarea 
-              rows="5" 
+            <textarea
+              rows="5"
               className="input-field scrollbar-hide focus:ring-primary/30"
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -107,8 +107,8 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
         </div>
 
         <div className="flex flex-col gap-4">
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading || !text}
             className="btn-primary py-4 text-lg"
           >
@@ -124,16 +124,15 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
               </>
             )}
           </button>
-          
+
           <AnimatePresence>
             {status.msg && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className={`p-4 rounded-xl flex items-center gap-3 ${
-                  status.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                }`}
+                className={`p-4 rounded-xl flex items-center gap-3 ${status.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                  }`}
               >
                 {status.type === 'success' ? <Sparkles size={18} /> : <AlertCircle size={18} />}
                 <span className="text-sm font-semibold">{status.msg}</span>

@@ -50,10 +50,10 @@ const FileList = ({ station }) => {
 
   return (
     <div className="glass-card flex flex-col max-h-[85vh]">
-      <div className="p-8 border-b border-border bg-white/5 flex items-center justify-between">
-        <h2 className="text-2xl font-bold flex items-center gap-3">
+      <div className="py-4 px-6 border-b border-border bg-white/5 flex items-center justify-between">
+        <h2 className="text-xl font-bold flex items-center gap-3">
           <div className="p-2 bg-secondary/20 rounded-lg text-secondary">
-            <HardDrive size={24} />
+            <HardDrive size={20} />
           </div>
           {t('recent_files')}
         </h2>
@@ -67,7 +67,7 @@ const FileList = ({ station }) => {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2 scrollbar-hide">
         {files.length === 0 && !loading && (
           <div className="flex flex-col items-center justify-center py-20 text-dim">
             <FileAudio size={48} className="opacity-20 mb-4" />
@@ -83,11 +83,11 @@ const FileList = ({ station }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
               key={file.name} 
-              className="flex items-center justify-between py-3 px-4 rounded-xl bg-white/5 border border-border group hover:bg-white/10 hover:border-white/20 transition-all"
+              className="flex items-center justify-between py-2 px-4 rounded-xl bg-white/5 border border-border group hover:bg-white/10 hover:border-white/20 transition-all"
             >
-              <div className="flex items-center gap-4 min-w-0">
-                <div className="p-2 bg-slate-800 rounded-lg text-dim group-hover:text-primary transition-colors">
-                  <Play size={18} />
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2 bg-slate-800 rounded-xl text-dim group-hover:text-primary transition-colors">
+                  <Play size={14} />
                 </div>
                 <div className="truncate">
                   <p className="text-sm font-bold truncate group-hover:text-white transition-colors">{file.name}</p>
