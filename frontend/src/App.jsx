@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogOut, Globe, Radio, Settings, ShieldCheck, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { login as apiLogin, fetchMe, fetchStations } from './api';
+import { login as apiLogin } from './api';
 import TTSPanel from './components/TTSPanel';
 import DownloadPanel from './components/DownloadPanel';
 import FileList from './components/FileList';

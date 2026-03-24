@@ -4,7 +4,7 @@ import { UserPlus, Radio, Trash2, Check, X } from 'lucide-react';
 import axios from 'axios';
 
 const AdminPanel = ({ token }) => {
-  const { t } = require('react-i18next').useTranslation();
+  const { t } = useTranslation();
   const [stations, setStations] = useState([]);
   const [users, setUsers] = useState([]);
   
