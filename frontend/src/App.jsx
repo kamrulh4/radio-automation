@@ -215,7 +215,7 @@ function App() {
                 <TTSPanel station={station} onGenerateSuccess={() => setRefreshKey(prev => prev + 1)} />
                 <DownloadPanel station={station} onDownloadSuccess={() => setRefreshKey(prev => prev + 1)} />
               </div>
-              <div className="lg:col-span-5 h-main-list">
+              <div className="lg:col-span-5">
                 <FileList station={station} key={refreshKey} />
               </div>
             </motion.div>

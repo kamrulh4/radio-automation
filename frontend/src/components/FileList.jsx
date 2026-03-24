@@ -49,7 +49,7 @@ const FileList = ({ station }) => {
   };
 
   return (
-    <div className="glass-card flex flex-col h-main-list">
+    <div className="glass-card flex flex-col max-h-[85vh]">
       <div className="p-8 border-b border-border bg-white/5 flex items-center justify-between">
         <h2 className="text-2xl font-bold flex items-center gap-3">
           <div className="p-2 bg-secondary/20 rounded-lg text-secondary">
@@ -83,10 +83,10 @@ const FileList = ({ station }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
               key={file.name} 
-              className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-border group hover:bg-white/10 hover:border-white/20 transition-all"
+              className="flex items-center justify-between py-3 px-4 rounded-xl bg-white/5 border border-border group hover:bg-white/10 hover:border-white/20 transition-all"
             >
               <div className="flex items-center gap-4 min-w-0">
-                <div className="p-3 bg-slate-800 rounded-xl text-dim group-hover:text-primary transition-colors">
+                <div className="p-2 bg-slate-800 rounded-lg text-dim group-hover:text-primary transition-colors">
                   <Play size={18} />
                 </div>
                 <div className="truncate">

@@ -76,7 +76,7 @@ const AdminPanel = ({ token }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Stations Management */}
-        <div className="glass-panel p-6">
+        <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-6">
             <Radio className="text-primary" />
             <h2 className="text-xl font-semibold">Radio Stations</h2>
@@ -88,7 +88,7 @@ const AdminPanel = ({ token }) => {
               placeholder="System Name (e.g., Radio_105)"
               value={newStation.name}
               onChange={e => setNewStation({...newStation, name: e.target.value})}
-              className="glass-input w-full"
+              className="input-field w-full"
               required
             />
             <input
@@ -96,10 +96,10 @@ const AdminPanel = ({ token }) => {
               placeholder="Display Name (e.g., Radio 105)"
               value={newStation.display_name}
               onChange={e => setNewStation({...newStation, display_name: e.target.value})}
-              className="glass-input w-full"
+              className="input-field w-full"
               required
             />
-            <button type="submit" className="primary-btn w-full justify-center">
+            <button type="submit" className="btn-primary w-full justify-center">
               Add Station
             </button>
           </form>
@@ -121,7 +121,7 @@ const AdminPanel = ({ token }) => {
         </div>
 
         {/* Users Management */}
-        <div className="glass-panel p-6">
+        <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-6">
             <UserPlus className="text-primary" />
             <h2 className="text-xl font-semibold">User Accounts</h2>
@@ -133,7 +133,7 @@ const AdminPanel = ({ token }) => {
               placeholder="Username"
               value={newUser.username}
               onChange={e => setNewUser({...newUser, username: e.target.value})}
-              className="glass-input w-full"
+              className="input-field w-full"
               required
             />
             <input
@@ -141,13 +141,13 @@ const AdminPanel = ({ token }) => {
               placeholder="Password"
               value={newUser.password}
               onChange={e => setNewUser({...newUser, password: e.target.value})}
-              className="glass-input w-full"
+              className="input-field w-full"
               required
             />
             <select
               value={newUser.role}
               onChange={e => setNewUser({...newUser, role: e.target.value})}
-              className="glass-input w-full"
+              className="input-field w-full"
             >
               <option value="dj">DJ (Restricted)</option>
               <option value="admin">Administrator</option>
@@ -156,7 +156,7 @@ const AdminPanel = ({ token }) => {
               <select
                 value={newUser.assigned_station_id}
                 onChange={e => setNewUser({...newUser, assigned_station_id: e.target.value})}
-                className="glass-input w-full"
+                className="input-field w-full"
                 required
               >
                 <option value="">Select Assigned Station...</option>
@@ -165,7 +165,7 @@ const AdminPanel = ({ token }) => {
                 ))}
               </select>
             )}
-            <button type="submit" className="primary-btn w-full justify-center">
+            <button type="submit" className="btn-primary w-full justify-center">
               Create User
             </button>
           </form>
