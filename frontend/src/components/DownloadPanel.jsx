@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, CloudRain, Newspaper, Car, CheckCircle2, RotateCw } from 'lucide-react';
+import { Download, CloudRain, Newspaper, Car, CheckCircle2, XCircle, RotateCw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { triggerDownload } from '../api';
 
@@ -68,6 +68,11 @@ const DownloadPanel = ({ station, onDownloadSuccess }) => {
             {results[type.id] === 'success' && (
               <div className="absolute top-2 right-2 text-emerald-500">
                 <CheckCircle2 size={14} />
+              </div>
+            )}
+            {results[type.id] === 'error' && (
+              <div className="absolute top-2 right-2 text-red-400">
+                <XCircle size={14} />
               </div>
             )}
           </motion.button>
