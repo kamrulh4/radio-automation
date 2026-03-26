@@ -52,6 +52,9 @@ class DownloadSourceBase(BaseModel):
     schedule_minute: str = "0"
     schedule_hour: str = "*"
     schedule_day_of_week: str = "*"
+    is_ai_mode: bool = False
+    prompt_text: Optional[str] = None
+    ai_voice_id: Optional[str] = None
     max_retries: int = 3
 
 class DownloadSourceCreate(DownloadSourceBase):

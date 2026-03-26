@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     
     # ElevenLabs
     ELEVENLABS_API_KEY: str
+    GEMINI_API_KEY: str # Phase 3: AI content generation
     
     # Security
     ADMIN_PASSWORD: str

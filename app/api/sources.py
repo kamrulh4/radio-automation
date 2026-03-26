@@ -31,6 +31,9 @@ async def create_source(source: DownloadSourceCreate, db: AsyncSession = Depends
         schedule_minute=source.schedule_minute,
         schedule_hour=source.schedule_hour,
         schedule_day_of_week=source.schedule_day_of_week,
+        is_ai_mode=source.is_ai_mode,
+        prompt_text=source.prompt_text,
+        ai_voice_id=source.ai_voice_id,
         max_retries=source.max_retries
     )
     db.add(new_source)
@@ -72,7 +75,10 @@ async def trigger_source(source_id: int, db: AsyncSession = Depends(get_db), adm
         station.name, 
         source.output_filename, 
         auth=auth,
-        max_retries=source.max_retries
+        max_retries=source.max_retries,
+        is_ai_mode=source.is_ai_mode,
+        prompt_text=source.prompt_text,
+        ai_voice_id=source.ai_voice_id
     )
     
     if success:

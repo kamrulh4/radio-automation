@@ -21,6 +21,9 @@ const AdminPanel = ({ token }) => {
     schedule_minute: '0',
     schedule_hour: '*',
     schedule_day_of_week: '*',
+    is_ai_mode: false,
+    prompt_text: '',
+    ai_voice_id: '',
     max_retries: 3
   });
   
@@ -88,7 +91,9 @@ const AdminPanel = ({ token }) => {
       showMessage('success', t('success'));
       setNewSource({ 
         name: '', url: '', username: '', password: '', output_filename: '', station_id: '',
-        schedule_minute: '0', schedule_hour: '*', schedule_day_of_week: '*', max_retries: 3
+        schedule_minute: '0', schedule_hour: '*', schedule_day_of_week: '*', 
+        is_ai_mode: false, prompt_text: '', ai_voice_id: '',
+        max_retries: 3
       });
       fetchData();
     } catch (err) {
@@ -252,6 +257,24 @@ const AdminPanel = ({ token }) => {
         </div>
 
         <form onSubmit={handleCreateSource} className="space-y-4 mb-8">
+          <div className="flex items-center gap-2 p-3 bg-white/5 rounded-xl border border-white/5 mb-4">
+            <label className="text-sm font-medium">Source Type:</label>
+            <button 
+              type="button"
+              onClick={() => setNewSource({...newSource, is_ai_mode: false})}
+              className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${!newSource.is_ai_mode ? 'bg-primary text-secondary font-bold' : 'bg-white/5 hover:bg-white/10'}`}
+            >
+              URL Download
+            </button>
+            <button 
+              type="button"
+              onClick={() => setNewSource({...newSource, is_ai_mode: true})}
+              className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${newSource.is_ai_mode ? 'bg-primary text-secondary font-bold' : 'bg-white/5 hover:bg-white/10'}`}
+            >
+              AI Prompt (Gemini + ElevenLabs)
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="text"
@@ -261,14 +284,31 @@ const AdminPanel = ({ token }) => {
               className="input-field"
               required
             />
-            <input
-              type="text"
-              placeholder="URL (Placeholders: {YYYY}, {MM}, {DD}, {date})"
-              value={newSource.url}
-              onChange={e => setNewSource({...newSource, url: e.target.value})}
-              className="input-field"
-              required
-            />
+            
+            {newSource.is_ai_mode ? (
+              <select
+                value={newSource.ai_voice_id}
+                onChange={e => setNewSource({...newSource, ai_voice_id: e.target.value})}
+                className="input-field"
+                required
+              >
+                <option value="">Select AI Voice...</option>
+                <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Standard)</option>
+                <option value="AZnzlk1XhkUvSJCok9q8">Nicole (Soft)</option>
+                <option value="EXAVITQu4vr4xnSDxMaL">Bella (Vibrant)</option>
+                <option value="ErXw6UMqc96m065U65lZ">Antoni (Male)</option>
+              </select>
+            ) : (
+              <input
+                type="text"
+                placeholder="URL (Placeholders: {YYYY}, {MM}, {DD}, {date})"
+                value={newSource.url}
+                onChange={e => setNewSource({...newSource, url: e.target.value})}
+                className="input-field"
+                required
+              />
+            )}
+
             <input
               type="text"
               placeholder={t('output_filename')}
@@ -279,33 +319,57 @@ const AdminPanel = ({ token }) => {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input
-              type="text"
-              placeholder={t('username')}
-              value={newSource.username}
-              onChange={e => setNewSource({...newSource, username: e.target.value})}
-              className="input-field"
+          {newSource.is_ai_mode ? (
+            <textarea
+              placeholder="Enter AI Prompt (e.g., 'Generate a 30-second daily news highlight for Radio Garda...')"
+              value={newSource.prompt_text}
+              onChange={e => setNewSource({...newSource, prompt_text: e.target.value})}
+              className="input-field w-full h-20"
+              required
             />
-            <input
-              type="password"
-              placeholder={t('password')}
-              value={newSource.password}
-              onChange={e => setNewSource({...newSource, password: e.target.value})}
-              className="input-field"
-            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input
+                type="text"
+                placeholder={t('username')}
+                value={newSource.username}
+                onChange={e => setNewSource({...newSource, username: e.target.value})}
+                className="input-field"
+              />
+              <input
+                type="password"
+                placeholder={t('password')}
+                value={newSource.password}
+                onChange={e => setNewSource({...newSource, password: e.target.value})}
+                className="input-field"
+              />
+               <select
+                value={newSource.station_id}
+                onChange={e => setNewSource({...newSource, station_id: e.target.value})}
+                className="input-field"
+                required
+              >
+                <option value="">{t('station')}...</option>
+                {stations.map(s => (
+                  <option key={s.id} value={s.id}>{s.display_name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          
+          {newSource.is_ai_mode && (
              <select
               value={newSource.station_id}
               onChange={e => setNewSource({...newSource, station_id: e.target.value})}
-              className="input-field"
+              className="input-field w-full"
               required
             >
-              <option value="">{t('station')}...</option>
+              <option value="">Select Target Station...</option>
               {stations.map(s => (
                 <option key={s.id} value={s.id}>{s.display_name}</option>
               ))}
             </select>
-          </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white/5 rounded-xl border border-white/5">
             <div className="space-y-1">
@@ -366,7 +430,7 @@ const AdminPanel = ({ token }) => {
               <tr className="text-dim text-xs uppercase border-b border-white/5">
                 <th className="pb-3 px-2 font-medium">{t('source_name')}</th>
                 <th className="pb-3 px-2 font-medium">Schedule</th>
-                <th className="pb-3 px-2 font-medium">URL</th>
+                <th className="pb-3 px-2 font-medium">Source / Prompt</th>
                 <th className="pb-3 px-2 font-medium">File</th>
                 <th className="pb-3 px-2 font-medium text-right">Actions</th>
               </tr>
@@ -387,7 +451,13 @@ const AdminPanel = ({ token }) => {
                     </div>
                   </td>
                   <td className="py-3 px-2">
-                    <div className="text-xs text-dim max-w-[150px] truncate" title={source.url}>{source.url}</div>
+                    {source.is_ai_mode ? (
+                      <div className="text-xs text-primary font-medium max-w-[150px] truncate flex items-center gap-1" title={source.prompt_text}>
+                        <Check size={10} /> AI: {source.prompt_text}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-dim max-w-[150px] truncate" title={source.url}>{source.url}</div>
+                    )}
                   </td>
                   <td className="py-3 px-2">
                     <div className="text-xs font-mono">{source.output_filename}</div>

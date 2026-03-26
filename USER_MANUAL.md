@@ -58,6 +58,11 @@ This feature allows you to automate downloads from 3rd party providers (e.g., yo
     - **Hours**: `8`, `21`, `9-17` (work hours), `*` (every hour).
     - **Days**: `mon-fri`, `0-6` (0=Sunday), `sat,sun`, `*` (every day).
 3.  **Automatic Retries**: If a provider's server is down, the system will **retry 3 times** with a 5-second delay before stopping until the next scheduled cycle.
+4.  **AI Prompt Generation (NEW - Phase 3)**:
+    - Instead of a URL, select **AI Prompt** mode.
+    - Write a prompt like *"Generate today's morning weather summary for Brescia in 2 sentences"*.
+    - Select an AI voice (Rachel, Antoni, etc.).
+    - On your schedule, the system will use **Google Gemini** to write the text and **ElevenLabs** to create the audio.
 
 ---
 

@@ -56,6 +56,11 @@ class DownloadSource(Base):
     schedule_hour = Column(String, default="*")        # "8", "21", "*", "9-17"
     schedule_day_of_week = Column(String, default="*") # "mon-fri", "sat,sun", "*", "0-6"
     
+    # AI Automation fields (Phase 3)
+    is_ai_mode = Column(Boolean, default=False)
+    prompt_text = Column(String, nullable=True)
+    ai_voice_id = Column(String, nullable=True)
+    
     max_retries = Column(Integer, default=3)           # Client asked for 2-3 retries
     
     created_at = Column(DateTime, default=datetime.utcnow)

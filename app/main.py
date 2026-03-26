@@ -108,11 +108,12 @@ async def scheduled_downloads():
                     # Run sync download in a thread
                     await asyncio.to_thread(
                         downloader.download_custom,
-                        source.url, 
-                        station.name, 
                         source.output_filename, 
                         auth=auth,
-                        max_retries=source.max_retries
+                        max_retries=source.max_retries,
+                        is_ai_mode=source.is_ai_mode,
+                        prompt_text=source.prompt_text,
+                        ai_voice_id=source.ai_voice_id
                     )
 
 # Scheduler
