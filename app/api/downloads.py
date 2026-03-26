@@ -20,12 +20,13 @@ async def trigger_download(type: str, station: str = "Radio_Garda", current_user
         raise HTTPException(status_code=400, detail="Invalid station")
         
     success = False
+    import asyncio
     if type == "meteo":
-        success = downloader.download_meteo(station)
+        success = await asyncio.to_thread(downloader.download_meteo, station)
     elif type == "news":
-        success = downloader.download_news(station)
+        success = await asyncio.to_thread(downloader.download_news, station)
     elif type == "traffic":
-        success = downloader.download_traffic_lombardia(station)
+        success = await asyncio.to_thread(downloader.download_traffic_lombardia, station)
     else:
         raise HTTPException(status_code=400, detail="Invalid download type")
         

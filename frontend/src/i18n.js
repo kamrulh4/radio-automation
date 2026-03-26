@@ -55,7 +55,11 @@ const resources = {
       "output_filename": "File Output (es. news.mp3)",
       "username": "Username (opzionale)",
       "password": "Password (opzionale)",
-      "trigger": "Scarica Ora"
+      "trigger": "Scarica Ora",
+      "minute": "Minuto (0-59)",
+      "hour": "Ora (0-23)",
+      "days": "Giorni (0=Lun, 6=Dom)",
+      "retries": "Tentativi retry"
     }
   }
 };

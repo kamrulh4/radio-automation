@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     
     # Storage
     STORAGE_PATH: str = "./storage"
-    STATIONS: List[str] = ["Radio_Garda"]
+    STATIONS: List[str] = ["Radio_Garda", "Radio_105"]
     
     # Environment
     DEBUG: bool = False

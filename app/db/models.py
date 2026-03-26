@@ -50,6 +50,14 @@ class DownloadSource(Base):
     output_filename = Column(String)                   # e.g. "news_fr3.mp3"
     station_id = Column(Integer, ForeignKey("stations.id"))
     is_active = Column(Boolean, default=True)
+    
+    # Scheduling fields (Cron-style)
+    schedule_minute = Column(String, default="0")      # "0", "30", "*", "*/5"
+    schedule_hour = Column(String, default="*")        # "8", "21", "*", "9-17"
+    schedule_day_of_week = Column(String, default="*") # "mon-fri", "sat,sun", "*", "0-6"
+    
+    max_retries = Column(Integer, default=3)           # Client asked for 2-3 retries
+    
     created_at = Column(DateTime, default=datetime.utcnow)
 
     station = relationship("Station")

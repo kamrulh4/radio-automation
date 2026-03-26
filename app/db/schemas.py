@@ -49,6 +49,10 @@ class DownloadSourceBase(BaseModel):
     output_filename: str
     station_id: int
     is_active: bool = True
+    schedule_minute: str = "0"
+    schedule_hour: str = "*"
+    schedule_day_of_week: str = "*"
+    max_retries: int = 3
 
 class DownloadSourceCreate(DownloadSourceBase):
     pass
