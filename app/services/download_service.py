@@ -26,10 +26,10 @@ class DownloadService:
         
     def download_meteo(self, station: str = "Radio_Garda"):
         """Downloads METEO from 3B Meteo with retries"""
+        import time
         date_str = datetime.now().strftime("%Y-%m-%d")
         url = f"https://radio.3bmeteo.com/radiogarda/{date_str}.mp3"
         
-        import time
         max_retries = 3
         attempts = 0
         while attempts < max_retries:
@@ -56,7 +56,6 @@ class DownloadService:
         except ImportError:
             from backports.zoneinfo import ZoneInfo
         
-        from datetime import timezone
         now = datetime.now(ZoneInfo("Europe/Rome"))
         date_str = now.strftime("%y_%m_%d")
         
@@ -107,14 +106,15 @@ class DownloadService:
 
     def download_traffic_lombardia(self, station: str = "Radio_Garda"):
         """Downloads Traffic for Lombardia with retries"""
+        import time
         url = "https://publisher.luceverde.it/not/newsPublished/Luceverde%20Milano%20audio/audio/D/MWoPCIExMl3JkmrUIDXvhkoacPor21LdlRcTxMl3JkoUJIZnABOFnxrgVsgMl32MWoPCIExMl3JkmrUIDXvhkoacPor21LdlRcTxMl3JkoUJIZnABOFnxrgVsgMl32"
         
-        import time
         max_retries = 3
         attempts = 0
         while attempts < max_retries:
             attempts += 1
             try:
+                print(f"Attempting traffic download (Attempt {attempts}/{max_retries}): {url}")
                 response = self.session.get(url, timeout=60)
                 if response.status_code == 200 and len(response.content) > 1000:
                     self.file_service.save_audio(response.content, station, "lombtraf.mp3", is_public=True)
@@ -127,49 +127,10 @@ class DownloadService:
             if attempts < max_retries:
                 time.sleep(5)
         return False
-        attempts = 0
-        while attempts < max_retries:
-            attempts += 1
-            try:
-                print(f"Attempting news download (Attempt {attempts}/{max_retries}): {url}")
-                response = self.session.get(url, auth=auth, timeout=60)
-                if response.status_code == 200 and len(response.content) > 1000:
-                    self.file_service.save_audio(response.content, station, "AREA24.mp3", is_public=True)
-                    print(f"News downloaded successfully!")
-                    return True
-                print(f"News attempt {attempts} failed: HTTP {response.status_code}")
-            except Exception as e:
-                print(f"News attempt {attempts} error: {str(e)}")
-            
-            if attempts < max_retries:
-                time.sleep(5)
-        return False
-
-    def download_traffic_lombardia(self, station: str = "Radio_Garda"):
-        """Downloads Traffic for Lombardia with retries"""
-        url = "https://publisher.luceverde.it/not/newsPublished/Luceverde%20Milano%20audio/audio/D/MWoPCIExMl3JkmrUIDXvhkoacPor21LdlRcTxMl3JkoUJIZnABOFnxrgVsgMl32MWoPCIExMl3JkmrUIDXvhkoacPor21LdlRcTxMl3JkoUJIZnABOFnxrgVsgMl32"
-        
-        import time
-        max_retries = 3
-        attempts = 0
-        while attempts < max_retries:
-            attempts += 1
-            try:
-                response = self.session.get(url, timeout=60)
-                if response.status_code == 200 and len(response.content) > 1000:
-                    self.file_service.save_audio(response.content, station, "lombtraf.mp3", is_public=True)
-                    print(f"Traffic downloaded successfully ({len(response.content)} bytes)")
-                    return True
-                print(f"Traffic attempt {attempts} failed: HTTP {response.status_code}")
-            except Exception as e:
-                print(f"Traffic attempt {attempts} error: {str(e)}")
-            
-            if attempts < max_retries:
-                time.sleep(5)
-        return False
 
     def download_custom(self, url: str, station: str, output_filename: str, auth: Optional[tuple] = None, max_retries: int = 3):
         """Downloads from any custom URL configured by admin with support for date placeholders and retries"""
+        import time
         
         # 1. Replace placeholders (Client requirement #3: Support dynamic patterns)
         now = datetime.now()
@@ -202,7 +163,6 @@ class DownloadService:
             
             # Brief pause before retry if not the last attempt
             if attempts < max_retries:
-                import time
                 time.sleep(5)
                 
         print(f"Custom download FAILED after {max_retries} attempts.")
