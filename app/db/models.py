@@ -37,3 +37,19 @@ class DownloadLog(Base):
     status = Column(String) # "success", "error"
     message = Column(String, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
+
+class DownloadSource(Base):
+    """Custom download sources configured by admin from the UI"""
+    __tablename__ = "download_sources"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)                              # Label, e.g. "Morning News FR3"
+    url = Column(String)                               # Full download URL
+    username = Column(String, nullable=True)            # Optional HTTP Basic Auth
+    password = Column(String, nullable=True)
+    output_filename = Column(String)                   # e.g. "news_fr3.mp3"
+    station_id = Column(Integer, ForeignKey("stations.id"))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    station = relationship("Station")

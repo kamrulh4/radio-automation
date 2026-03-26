@@ -48,7 +48,14 @@ const resources = {
       "status": "Stato",
       "quota": "Quota ElevenLabs",
       "success": "Operazione riuscita",
-      "error": "Si è verificato un errore"
+      "error": "Si è verificato un errore",
+      "sources_title": "Sorgenti Download Dinamici",
+      "add_source": "Aggiungi Sorgente",
+      "source_name": "Nome Sorgente",
+      "output_filename": "File Output (es. news.mp3)",
+      "username": "Username (opzionale)",
+      "password": "Password (opzionale)",
+      "trigger": "Scarica Ora"
     }
   }
 };

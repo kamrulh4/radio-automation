@@ -117,3 +117,21 @@ class DownloadService:
         except Exception as e:
             print(f"Traffic download failed: {str(e)}")
             return False
+
+    def download_custom(self, url: str, station: str, output_filename: str, auth: tuple = None):
+        """Downloads from any custom URL configured by admin"""
+        try:
+            print(f"Custom download: {url} -> {output_filename}")
+            kwargs = {"timeout": 60}
+            if auth:
+                kwargs["auth"] = auth
+            response = self.session.get(url, **kwargs)
+            if response.status_code == 200 and len(response.content) > 100:
+                self.file_service.save_audio(response.content, station, output_filename, is_public=True)
+                print(f"Custom download OK: {output_filename} ({len(response.content)} bytes)")
+                return True
+            print(f"Custom download failed: HTTP {response.status_code}")
+            return False
+        except Exception as e:
+            print(f"Custom download error: {str(e)}")
+            return False

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserPlus, Radio, Trash2, Check, X } from 'lucide-react';
-import axios from 'axios';
+import api from '../api';
 
 const AdminPanel = ({ token }) => {
   const { t } = useTranslation();
   const [stations, setStations] = useState([]);
   const [users, setUsers] = useState([]);
+  const [sources, setSources] = useState([]);
   
   const [newStation, setNewStation] = useState({ name: '', display_name: '', is_active: true });
   const [newUser, setNewUser] = useState({ username: '', password: '', role: 'dj', assigned_station_id: '' });
+  const [newSource, setNewSource] = useState({ name: '', url: '', username: '', password: '', output_filename: '', station_id: '' });
   
   const [message, setMessage] = useState({ type: '', text: '' });
 
@@ -19,13 +21,14 @@ const AdminPanel = ({ token }) => {
 
   const fetchData = async () => {
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-      const [stationRes, userRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/stations/', { headers }),
-        axios.get('http://localhost:8000/api/users/', { headers })
+      const [stationRes, userRes, sourceRes] = await Promise.all([
+        api.get('/stations/'),
+        api.get('/users/'),
+        api.get('/sources/')
       ]);
       setStations(stationRes.data);
       setUsers(userRes.data);
+      setSources(sourceRes.data);
     } catch (err) {
       console.error(err);
       setMessage({ type: 'error', text: 'Failed to load admin data.' });
@@ -40,9 +43,7 @@ const AdminPanel = ({ token }) => {
   const handleCreateStation = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/stations/', newStation, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post('/stations/', newStation);
       showMessage('success', 'Station created successfully!');
       setNewStation({ name: '', display_name: '', is_active: true });
       fetchData();
@@ -55,14 +56,45 @@ const AdminPanel = ({ token }) => {
     e.preventDefault();
     try {
       const payload = { ...newUser, assigned_station_id: newUser.assigned_station_id ? parseInt(newUser.assigned_station_id) : null };
-      await axios.post('http://localhost:8000/api/users/', payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post('/users/', payload);
       showMessage('success', 'User created successfully!');
       setNewUser({ username: '', password: '', role: 'dj', assigned_station_id: '' });
       fetchData();
     } catch (err) {
       showMessage('error', err.response?.data?.detail || 'Failed to create user');
+    }
+  };
+
+  const handleCreateSource = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = { ...newSource, station_id: parseInt(newSource.station_id) };
+      await api.post('/sources/', payload);
+      showMessage('success', t('success'));
+      setNewSource({ name: '', url: '', username: '', password: '', output_filename: '', station_id: '' });
+      fetchData();
+    } catch (err) {
+      showMessage('error', err.response?.data?.detail || t('error'));
+    }
+  };
+
+  const handleDeleteSource = async (id) => {
+    if (!window.confirm('Are you sure?')) return;
+    try {
+      await api.delete(`/sources/${id}`);
+      showMessage('success', t('success'));
+      fetchData();
+    } catch (err) {
+      showMessage('error', t('error'));
+    }
+  };
+
+  const handleTriggerSource = async (id) => {
+    try {
+      await api.post(`/sources/${id}/trigger`);
+      showMessage('success', t('success'));
+    } catch (err) {
+      showMessage('error', t('error'));
     }
   };
 
@@ -192,6 +224,118 @@ const AdminPanel = ({ token }) => {
           </div>
         </div>
 
+      </div>
+
+      {/* Dynamic Download Sources Management */}
+      <div className="glass-card p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Radio className="text-primary" />
+          <h2 className="text-xl font-semibold">{t('sources_title')}</h2>
+        </div>
+
+        <form onSubmit={handleCreateSource} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <input
+            type="text"
+            placeholder={t('source_name')}
+            value={newSource.name}
+            onChange={e => setNewSource({...newSource, name: e.target.value})}
+            className="input-field"
+            required
+          />
+          <input
+            type="text"
+            placeholder="URL"
+            value={newSource.url}
+            onChange={e => setNewSource({...newSource, url: e.target.value})}
+            className="input-field"
+            required
+          />
+          <input
+            type="text"
+            placeholder={t('output_filename')}
+            value={newSource.output_filename}
+            onChange={e => setNewSource({...newSource, output_filename: e.target.value})}
+            className="input-field"
+            required
+          />
+          <input
+            type="text"
+            placeholder={t('username')}
+            value={newSource.username}
+            onChange={e => setNewSource({...newSource, username: e.target.value})}
+            className="input-field"
+          />
+          <input
+            type="password"
+            placeholder={t('password')}
+            value={newSource.password}
+            onChange={e => setNewSource({...newSource, password: e.target.value})}
+            className="input-field"
+          />
+          <select
+            value={newSource.station_id}
+            onChange={e => setNewSource({...newSource, station_id: e.target.value})}
+            className="input-field"
+            required
+          >
+            <option value="">{t('station')}...</option>
+            {stations.map(s => (
+              <option key={s.id} value={s.id}>{s.display_name}</option>
+            ))}
+          </select>
+          <button type="submit" className="btn-primary md:col-span-3 justify-center">
+            {t('add_source')}
+          </button>
+        </form>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="text-dim text-xs uppercase border-b border-white/5">
+                <th className="pb-3 px-2 font-medium">{t('source_name')}</th>
+                <th className="pb-3 px-2 font-medium">URL</th>
+                <th className="pb-3 px-2 font-medium">File</th>
+                <th className="pb-3 px-2 font-medium">{t('station')}</th>
+                <th className="pb-3 px-2 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sources.map(source => (
+                <tr key={source.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
+                  <td className="py-3 px-2">
+                    <div className="font-medium text-sm">{source.name}</div>
+                  </td>
+                  <td className="py-3 px-2">
+                    <div className="text-xs text-dim max-w-[200px] truncate" title={source.url}>{source.url}</div>
+                  </td>
+                  <td className="py-3 px-2">
+                    <div className="text-xs font-mono">{source.output_filename}</div>
+                  </td>
+                  <td className="py-3 px-2">
+                    <div className="text-xs">{stations.find(s => s.id === source.station_id)?.display_name}</div>
+                  </td>
+                  <td className="py-3 px-2 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button 
+                        onClick={() => handleTriggerSource(source.id)}
+                        className="p-1.5 hover:bg-primary/20 hover:text-primary rounded-lg transition-colors"
+                        title={t('trigger')}
+                      >
+                        <Radio size={16} />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteSource(source.id)}
+                        className="p-1.5 hover:bg-red-500/20 hover:text-red-400 rounded-lg transition-colors"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

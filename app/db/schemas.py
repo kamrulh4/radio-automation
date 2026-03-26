@@ -40,3 +40,22 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
     role: Optional[str] = None
+
+class DownloadSourceBase(BaseModel):
+    name: str
+    url: str
+    username: Optional[str] = None
+    password: Optional[str] = None
+    output_filename: str
+    station_id: int
+    is_active: bool = True
+
+class DownloadSourceCreate(DownloadSourceBase):
+    pass
+
+class DownloadSource(DownloadSourceBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
