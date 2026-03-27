@@ -61,7 +61,7 @@ This feature allows you to automate downloads from 3rd party providers (e.g., yo
 4.  **AI Prompt Generation (NEW - Phase 3)**:
     - Instead of a URL, select **AI Prompt** mode.
     - Write a prompt like *"Generate today's morning weather summary for Brescia in 2 sentences"*.
-    - Select an AI voice (Rachel, Antoni, etc.).
+    - Select any **AI voice** from your ElevenLabs account (The list is fetched dynamically from your account).
     - On your schedule, the system will use **Google Gemini** to write the text and **ElevenLabs** to create the audio.
 
 ---

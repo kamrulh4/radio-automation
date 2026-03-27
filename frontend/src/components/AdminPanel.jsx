@@ -8,6 +8,7 @@ const AdminPanel = ({ token }) => {
   const [stations, setStations] = useState([]);
   const [users, setUsers] = useState([]);
   const [sources, setSources] = useState([]);
+  const [voices, setVoices] = useState([]);
   
   const [newStation, setNewStation] = useState({ name: '', display_name: '', is_active: true });
   const [newUser, setNewUser] = useState({ username: '', password: '', role: 'dj', assigned_station_id: '' });
@@ -35,14 +36,16 @@ const AdminPanel = ({ token }) => {
 
   const fetchData = async () => {
     try {
-      const [stationRes, userRes, sourceRes] = await Promise.all([
+      const [stationRes, userRes, sourceRes, voiceRes] = await Promise.all([
         api.get('/stations/'),
         api.get('/users/'),
-        api.get('/sources/')
+        api.get('/sources/'),
+        api.get('/tts/voices')
       ]);
       setStations(stationRes.data);
       setUsers(userRes.data);
       setSources(sourceRes.data);
+      setVoices(voiceRes.data);
     } catch (err) {
       console.error(err);
       setMessage({ type: 'error', text: 'Failed to load admin data.' });
@@ -293,10 +296,11 @@ const AdminPanel = ({ token }) => {
                 required
               >
                 <option value="">Select AI Voice...</option>
-                <option value="21m00Tcm4TlvDq8ikWAM">Rachel (Standard)</option>
-                <option value="AZnzlk1XhkUvSJCok9q8">Nicole (Soft)</option>
-                <option value="EXAVITQu4vr4xnSDxMaL">Bella (Vibrant)</option>
-                <option value="ErXw6UMqc96m065U65lZ">Antoni (Male)</option>
+                {voices.map(voice => (
+                  <option key={voice.voice_id} value={voice.voice_id}>
+                    {voice.name} ({voice.labels?.accent || voice.category})
+                  </option>
+                ))}
               </select>
             ) : (
               <input
