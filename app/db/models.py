@@ -66,3 +66,12 @@ class DownloadSource(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     station = relationship("Station")
+
+class SystemSetting(Base):
+    """System configuration stored in the database (e.g., API keys)"""
+    __tablename__ = "system_settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String, unique=True, index=True) # e.g. "GEMINI_API_KEY"
+    value = Column(String)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

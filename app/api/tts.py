@@ -24,11 +24,15 @@ class TTSRequest(BaseModel):
     similarity: float = 0.5
 
 @router.get("/voices")
-async def get_voices(current_user: str = Depends(get_current_user)):
+async def get_voices(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    db_key = await SettingsService.get_setting(db, "ELEVENLABS_API_KEY")
+    elevenlabs = ElevenLabsService(api_key=db_key)
     return elevenlabs.get_voices()
 
 @router.get("/usage")
-async def get_usage(current_user: str = Depends(get_current_user)):
+async def get_usage(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    db_key = await SettingsService.get_setting(db, "ELEVENLABS_API_KEY")
+    elevenlabs = ElevenLabsService(api_key=db_key)
     return elevenlabs.get_user_subscription()
 
 @router.post("/generate")
@@ -37,6 +41,9 @@ async def generate_speech(request: TTSRequest, current_user: DBUser = Depends(ge
     if not result.scalars().first():
         raise HTTPException(status_code=400, detail="Invalid station")
         
+    db_key = await SettingsService.get_setting(db, "ELEVENLABS_API_KEY")
+    elevenlabs = ElevenLabsService(api_key=db_key)
+    
     voice = elevenlabs.get_voice_by_name(request.voice_name)
     if not voice:
         raise HTTPException(status_code=404, detail=f"Voice {request.voice_name} not found")

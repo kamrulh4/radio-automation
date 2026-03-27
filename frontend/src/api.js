@@ -39,4 +39,8 @@ export const createSource = (data) => api.post('/sources', data);
 export const deleteSource = (id) => api.delete(`/sources/${id}`);
 export const triggerSource = (id) => api.post(`/sources/${id}/trigger`);
 
+// System Settings
+export const listSettings = () => api.get('/settings');
+export const updateSetting = (key, value) => api.post('/settings', { key, value });
+
 export default api;

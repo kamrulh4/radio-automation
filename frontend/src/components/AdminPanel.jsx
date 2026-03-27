@@ -9,6 +9,8 @@ const AdminPanel = ({ token }) => {
   const [users, setUsers] = useState([]);
   const [sources, setSources] = useState([]);
   const [voices, setVoices] = useState([]);
+  const [settings, setSettings] = useState([]);
+  const [loadingSettings, setLoadingSettings] = useState(false);
   
   const [newStation, setNewStation] = useState({ name: '', display_name: '', is_active: true });
   const [newUser, setNewUser] = useState({ username: '', password: '', role: 'dj', assigned_station_id: '' });
@@ -36,16 +38,18 @@ const AdminPanel = ({ token }) => {
 
   const fetchData = async () => {
     try {
-      const [stationRes, userRes, sourceRes, voiceRes] = await Promise.all([
+      const [stationRes, userRes, sourceRes, voiceRes, settingsRes] = await Promise.all([
         api.get('/stations/'),
         api.get('/users/'),
         api.get('/sources/'),
-        api.get('/tts/voices')
+        api.get('/tts/voices'),
+        api.get('/settings/')
       ]);
       setStations(stationRes.data);
       setUsers(userRes.data);
       setSources(sourceRes.data);
       setVoices(voiceRes.data);
+      setSettings(settingsRes.data);
     } catch (err) {
       console.error(err);
       setMessage({ type: 'error', text: 'Failed to load admin data.' });
@@ -121,6 +125,19 @@ const AdminPanel = ({ token }) => {
       showMessage('success', t('success'));
     } catch (err) {
       showMessage('error', t('error'));
+    }
+  };
+
+  const handleUpdateSetting = async (key, value) => {
+    setLoadingSettings(true);
+    try {
+      await api.post('/settings/', { key, value });
+      showMessage('success', 'Setting updated successfully!');
+      fetchData();
+    } catch (err) {
+      showMessage('error', 'Failed to update setting');
+    } finally {
+      setLoadingSettings(false);
     }
   };
 
@@ -488,6 +505,61 @@ const AdminPanel = ({ token }) => {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* System Settings Management */}
+      <div className="glass-card p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <RefreshCw className={`text-primary ${loadingSettings ? 'animate-spin' : ''}`} />
+          <h2 className="text-xl font-semibold">System Settings (API Keys)</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-dim block mb-2">Google Gemini API Key</label>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  placeholder="Enter Gemini Key..."
+                  defaultValue={settings.find(s => s.key === 'GEMINI_API_KEY')?.value || ''}
+                  onBlur={(e) => {
+                    const val = e.target.value;
+                    if (val) handleUpdateSetting('GEMINI_API_KEY', val);
+                  }}
+                  className="input-field flex-1"
+                />
+              </div>
+              <p className="text-[10px] text-dim mt-1 italic">Used for autonomous content generation.</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-dim block mb-2">ElevenLabs API Key</label>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  placeholder="Enter ElevenLabs Key..."
+                  defaultValue={settings.find(s => s.key === 'ELEVENLABS_API_KEY')?.value || ''}
+                  onBlur={(e) => {
+                    const val = e.target.value;
+                    if (val) handleUpdateSetting('ELEVENLABS_API_KEY', val);
+                  }}
+                  className="input-field flex-1"
+                />
+              </div>
+              <p className="text-[10px] text-dim mt-1 italic">Used for Text-to-Speech conversion.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10">
+          <p className="text-xs text-primary/80">
+            <strong>Note:</strong> Changes to API keys take effect immediately for both manual TTS and autonomous scheduled downloads. 
+            If a key is empty in the database, the system will fallback to the default keys configured in the server's .env file.
+          </p>
         </div>
       </div>
     </div>

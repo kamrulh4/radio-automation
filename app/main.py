@@ -95,6 +95,11 @@ async def scheduled_downloads():
         current_hour = now.hour
         current_day = now.weekday() 
 
+        # 3. Fetch API Keys for AI content
+        from .services.settings_service import SettingsService
+        gemini_key = await SettingsService.get_setting(session, "GEMINI_API_KEY")
+        elevenlabs_key = await SettingsService.get_setting(session, "ELEVENLABS_API_KEY")
+
         for source in custom_sources:
             if (is_time_to_run(current_minute, source.schedule_minute) and 
                 is_time_to_run(current_hour, source.schedule_hour) and 
@@ -108,12 +113,16 @@ async def scheduled_downloads():
                     # Run sync download in a thread
                     await asyncio.to_thread(
                         downloader.download_custom,
+                        source.url, 
+                        station.name, 
                         source.output_filename, 
                         auth=auth,
                         max_retries=source.max_retries,
                         is_ai_mode=source.is_ai_mode,
                         prompt_text=source.prompt_text,
-                        ai_voice_id=source.ai_voice_id
+                        ai_voice_id=source.ai_voice_id,
+                        gemini_key=gemini_key,
+                        elevenlabs_key=elevenlabs_key
                     )
 
 # Scheduler
@@ -198,10 +207,11 @@ async def root():
     return {"message": "Radio Automation API is running"}
 
 # Import and include routers
-from .api import auth, tts, downloads, users, stations, sources
+from .api import auth, tts, downloads, users, stations, sources, admin_settings
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(tts.router, prefix="/api/tts", tags=["TTS"])
 app.include_router(downloads.router, prefix="/api/downloads", tags=["Downloads"])
 app.include_router(users.router, prefix="/api/users", tags=["User Management"])
 app.include_router(stations.router, prefix="/api/stations", tags=["Station Management"])
 app.include_router(sources.router, prefix="/api/sources", tags=["Download Sources"])
+app.include_router(admin_settings.router, prefix="/api/settings", tags=["System Settings"])

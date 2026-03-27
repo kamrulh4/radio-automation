@@ -10,10 +10,10 @@ import urllib3
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-try:
-    import google.generativeai as genai
-except ImportError:
-    genai = None
+from .settings_service import SettingsService
+from .elevenlabs_service import ElevenLabsService
+from .gemini_service import GeminiService
+from sqlalchemy.ext.asyncio import AsyncSession
 
 class DownloadService:
     """Handles logic for automated batch downloads from external providers"""
@@ -135,13 +135,14 @@ class DownloadService:
         return False
 
     def download_custom(self, url: str, station: str, output_filename: str, auth: Optional[tuple] = None, max_retries: int = 3, 
-                        is_ai_mode: bool = False, prompt_text: Optional[str] = None, ai_voice_id: Optional[str] = None):
+                        is_ai_mode: bool = False, prompt_text: Optional[str] = None, ai_voice_id: Optional[str] = None,
+                        gemini_key: Optional[str] = None, elevenlabs_key: Optional[str] = None):
         """Downloads from URL or Generates from AI Prompt, then saves to station folder"""
         import time
         
         # Phase 3: AI Prompt Mode
         if is_ai_mode and prompt_text:
-            return self._generate_and_save_ai_content(prompt_text, station, output_filename, ai_voice_id, max_retries)
+            return self._generate_and_save_ai_content(prompt_text, station, output_filename, ai_voice_id, max_retries, gemini_key, elevenlabs_key)
         
         # Original: URL Download Mode
         # 1. Replace placeholders (Client requirement #3: Support dynamic patterns)
@@ -180,17 +181,14 @@ class DownloadService:
         print(f"Custom download FAILED after {max_retries} attempts.")
         return False
 
-    def _generate_and_save_ai_content(self, prompt: str, station: str, output_filename: str, voice_id: Optional[str], max_retries: int):
-        """Generates text from Gemini, then audio from ElevenLabs"""
+    def _generate_and_save_ai_content(self, prompt: str, station: str, output_filename: str, voice_id: Optional[str], max_retries: int, 
+                                     gemini_key: Optional[str] = None, elevenlabs_key: Optional[str] = None):
+        """Generates text from Gemini, then audio from ElevenLabs using centralized services"""
         import time
         
-        if not genai:
-            print("Error: google-generativeai not installed")
-            return False
-        
-        if not settings.GEMINI_API_KEY:
-            print("Error: GEMINI_API_KEY not configured in .env")
-            return False
+        # Initialize services with dynamic keys
+        gemini = GeminiService(api_key=gemini_key)
+        elevenlabs = ElevenLabsService(api_key=elevenlabs_key)
 
         attempts = 0
         while attempts < max_retries:
@@ -198,38 +196,20 @@ class DownloadService:
             try:
                 print(f"AI Generation (Attempt {attempts}/{max_retries}): {prompt}")
                 
-                # 1. Call Gemini
-                genai.configure(api_key=settings.GEMINI_API_KEY)
-                model = genai.GenerativeModel('gemini-pro')
-                response = model.generate_content(prompt)
-                
-                if not response.text:
-                    raise Exception("Gemini returned empty text")
-                
-                generated_text = response.text
+                # 1. Generate text using Gemini
+                generated_text = gemini.generate_text(prompt)
                 print(f"AI Generated Text: {generated_text[:100]}...")
                 
-                # 2. Call ElevenLabs (Reuse TTS logic)
-                # We need to import the TTS function or call the API directly
-                elevenlabs_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id or '21m00Tcm4TlvDq8ikWAM'}"
-                headers = {
-                    "Accept": "audio/mpeg",
-                    "Content-Type": "application/json",
-                    "xi-api-key": settings.ELEVENLABS_API_KEY
-                }
-                data = {
-                    "text": generated_text,
-                    "model_id": "eleven_multilingual_v2",
-                    "voice_settings": {"stability": 0.5, "similarity_boost": 0.5}
-                }
+                # 2. Generate audio using ElevenLabs
+                audio_content = elevenlabs.generate_speech(
+                    text=generated_text,
+                    voice_id=voice_id or "21m00Tcm4TlvDq8ikWAM" # Fallback to default voice
+                )
                 
-                tts_res = requests.post(elevenlabs_url, json=data, headers=headers, timeout=120)
-                if tts_res.status_code == 200:
-                    self.file_service.save_audio(tts_res.content, station, output_filename, is_public=True)
-                    print(f"AI content successfully generated and saved to {output_filename}")
-                    return True
-                else:
-                    raise Exception(f"ElevenLabs TTS failed: {tts_res.status_code} - {tts_res.text}")
+                # 3. Save to storage
+                self.file_service.save_audio(audio_content, station, output_filename, is_public=True)
+                print(f"AI content successfully generated and saved to {output_filename}")
+                return True
                     
             except Exception as e:
                 print(f"AI Generation attempt {attempts} error: {str(e)}")

@@ -49,7 +49,23 @@ class FileService:
                 })
         return sorted(files, key=lambda x: x["modified"], reverse=True)
 
-    def cleanup_old_files(self, station: str, days: int = 30):
-        """Delete files older than N days"""
-        # Implementation for later if needed
-        pass
+    def cleanup_old_files(self, station: str, days: int = 7, is_public: bool = True):
+        """Delete files older than N days to save space"""
+        import time
+        sub_dir = "public" if is_public else "stations"
+        target_dir = os.path.join(self.base_path, sub_dir, station)
+        
+        if not os.path.exists(target_dir):
+            return
+            
+        now = time.time()
+        max_age = days * 86400 # 24 * 3600
+        
+        for filename in os.listdir(target_dir):
+            filepath = os.path.join(target_dir, filename)
+            if os.stat(filepath).st_mtime < now - max_age:
+                try:
+                    os.remove(filepath)
+                    print(f"Cleaned up old file: {filepath}")
+                except Exception as e:
+                    print(f"Failed to delete {filepath}: {str(e)}")

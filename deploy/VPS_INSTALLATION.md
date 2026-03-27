@@ -120,8 +120,17 @@ sudo systemctl restart nginx
 
 ---
 
-## 📂 5. Storage Permissions
+### 5. Automated AI Scheduler
+The platform includes an `APScheduler` that runs as part of the FastAPI process. It checks for scheduled content every minute.
 
+- **How to verify**: Check the service logs to see the scheduler activity.
+```bash
+sudo journalctl -u radio-automation -f
+```
+You should see lines like: `Checking scheduled downloads at 2024-03-27 14:30`.
+- **Note**: The scheduler starts automatically when the API starts. No extra configuration is needed unless you change the timezone in `app/core/config.py`.
+
+### 6. Media Storage & RadioDJ
 Important for RadioDJ integration:
 ```bash
 chmod -R 777 /path/to/radio_automation/storage

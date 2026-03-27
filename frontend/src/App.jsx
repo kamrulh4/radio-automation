@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogOut, Globe, Radio, Settings, ShieldCheck, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { login as apiLogin } from './api';
+import api, { getVoices, listStations } from './api';
 import TTSPanel from './components/TTSPanel';
 import DownloadPanel from './components/DownloadPanel';
 import FileList from './components/FileList';
 import AdminPanel from './components/AdminPanel';
-import axios from 'axios';
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -32,11 +31,10 @@ function App() {
 
   const loadUserData = async (currentToken) => {
     try {
-      const headers = { Authorization: `Bearer ${currentToken}` };
-      const userRes = await axios.get('http://localhost:8000/api/auth/me', { headers });
+      const userRes = await api.get('/auth/me');
       setUser(userRes.data);
       
-      const stationsRes = await axios.get('http://localhost:8000/api/stations/', { headers });
+      const stationsRes = await api.get('/stations/');
       let availableStations = stationsRes.data;
       
       // Filter for DJs
@@ -62,7 +60,7 @@ function App() {
       formData.append('username', username);
       formData.append('password', password);
       
-      const res = await axios.post('http://localhost:8000/api/auth/login', formData);
+      const res = await api.post('/auth/login', formData);
       const access_token = res.data.access_token;
       
       localStorage.setItem('token', access_token);
