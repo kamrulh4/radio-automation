@@ -3,8 +3,8 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
 # Database URL for SQLite (Async)
-# The database file will be created in the application root or storage folder
-DATABASE_URL = "sqlite+aiosqlite:///./radio_automation.db"
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATABASE_URL = f"sqlite+aiosqlite:///{os.path.join(PROJECT_ROOT, 'radio_automation.db')}"
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 AsyncSessionLocal = sessionmaker(

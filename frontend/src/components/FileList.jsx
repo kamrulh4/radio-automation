@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Upload, FileAudio, ExternalLink, RefreshCw, Clock, HardDrive, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { listFiles, uploadFile } from '../api';
+import { listFiles, uploadFile, BASE_URL } from '../api';
 
 const FileList = ({ station }) => {
   const { t } = useTranslation();
@@ -102,7 +102,7 @@ const FileList = ({ station }) => {
               </div>
               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <a 
-                  href={`http://localhost:8000${file.url}`} 
+                  href={`${BASE_URL}${file.url}`} 
                   target="_blank" 
                   rel="noreferrer"
                   className="p-2 hover:bg-primary/20 rounded-lg text-primary transition-colors"

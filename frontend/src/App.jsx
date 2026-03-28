@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogOut, Globe, Radio, Settings, ShieldCheck, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import api, { getVoices, listStations } from './api';
+import api, { getVoices, listStations, getCurrentUser, login } from './api';
 import TTSPanel from './components/TTSPanel';
 import DownloadPanel from './components/DownloadPanel';
 import FileList from './components/FileList';
@@ -31,10 +31,10 @@ function App() {
 
   const loadUserData = async (currentToken) => {
     try {
-      const userRes = await api.get('/auth/me');
+      const userRes = await getCurrentUser();
       setUser(userRes.data);
       
-      const stationsRes = await api.get('/stations/');
+      const stationsRes = await listStations();
       let availableStations = stationsRes.data;
       
       // Filter for DJs
@@ -56,12 +56,8 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('password', password);
-      
-      const res = await api.post('/auth/login', formData);
-      const access_token = res.data.access_token;
+      const res = await login(username, password);
+      const access_token = res.access_token;
       
       localStorage.setItem('token', access_token);
       setToken(access_token);
