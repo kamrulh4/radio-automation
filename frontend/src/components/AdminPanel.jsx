@@ -52,7 +52,7 @@ const AdminPanel = ({ token }) => {
       setSettings(settingsRes.data);
     } catch (err) {
       console.error(err);
-      setMessage({ type: 'error', text: 'Failed to load admin data.' });
+      setMessage({ type: 'error', text: t('error') });
     }
   };
 
@@ -132,10 +132,10 @@ const AdminPanel = ({ token }) => {
     setLoadingSettings(true);
     try {
       await api.post('/settings/', { key, value });
-      showMessage('success', 'Setting updated successfully!');
+      showMessage('success', t('success'));
       fetchData();
     } catch (err) {
-      showMessage('error', 'Failed to update setting');
+      showMessage('error', t('error'));
     } finally {
       setLoadingSettings(false);
     }
@@ -154,7 +154,7 @@ const AdminPanel = ({ token }) => {
         <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-6">
             <Radio className="text-primary" />
-            <h2 className="text-xl font-semibold">Radio Stations</h2>
+            <h2 className="text-xl font-semibold">{t('admin_stations')}</h2>
           </div>
           
           <form onSubmit={handleCreateStation} className="space-y-4 mb-6">
@@ -175,12 +175,12 @@ const AdminPanel = ({ token }) => {
               required
             />
             <button type="submit" className="btn-primary w-full justify-center">
-              Add Station
+              {t('create_station')}
             </button>
           </form>
 
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-dim mb-3">Active Stations</h3>
+            <h3 className="text-sm font-medium text-dim mb-3">{t('active_stations')}</h3>
             {stations.map(station => (
               <div key={station.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5">
                 <div>
@@ -188,7 +188,7 @@ const AdminPanel = ({ token }) => {
                   <div className="text-xs text-dim font-mono">{station.name}</div>
                 </div>
                 <div className={`px-2 py-1 rounded text-xs ${station.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                  {station.is_active ? 'Active' : 'Inactive'}
+                  {station.is_active ? t('active') : t('inactive')}
                 </div>
               </div>
             ))}
@@ -199,7 +199,7 @@ const AdminPanel = ({ token }) => {
         <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-6">
             <UserPlus className="text-primary" />
-            <h2 className="text-xl font-semibold">User Accounts</h2>
+            <h2 className="text-xl font-semibold">{t('admin_users')}</h2>
           </div>
 
           <form onSubmit={handleCreateUser} className="space-y-4 mb-6">
@@ -224,8 +224,8 @@ const AdminPanel = ({ token }) => {
               onChange={e => setNewUser({...newUser, role: e.target.value})}
               className="input-field w-full"
             >
-              <option value="dj">DJ (Restricted)</option>
-              <option value="admin">Administrator</option>
+              <option value="dj">{t('dj_role')}</option>
+              <option value="admin">{t('admin_role')}</option>
             </select>
             {newUser.role === 'dj' && (
               <select
@@ -234,19 +234,19 @@ const AdminPanel = ({ token }) => {
                 className="input-field w-full"
                 required
               >
-                <option value="">Select Assigned Station...</option>
+                <option value="">{t('select_assigned_station')}</option>
                 {stations.map(s => (
                   <option key={s.id} value={s.id}>{s.display_name}</option>
                 ))}
               </select>
             )}
             <button type="submit" className="btn-primary w-full justify-center">
-              Create User
+              {t('create_user')}
             </button>
           </form>
 
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-dim mb-3">System Users</h3>
+            <h3 className="text-sm font-medium text-dim mb-3">{t('system_users')}</h3>
             {users.map(user => (
               <div key={user.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5">
                 <div>
@@ -258,7 +258,7 @@ const AdminPanel = ({ token }) => {
                   </div>
                   {user.role === 'dj' && (
                     <div className="text-xs text-dim mt-1">
-                      Station: {stations.find(s => s.id === user.assigned_station_id)?.display_name || 'None'}
+                      {t('station')}: {stations.find(s => s.id === user.assigned_station_id)?.display_name || t('none')}
                     </div>
                   )}
                 </div>
@@ -278,20 +278,20 @@ const AdminPanel = ({ token }) => {
 
         <form onSubmit={handleCreateSource} className="space-y-4 mb-8">
           <div className="flex items-center gap-2 p-3 bg-white/5 rounded-xl border border-white/5 mb-4">
-            <label className="text-sm font-medium">Source Type:</label>
+            <label className="text-sm font-medium">{t('source_type')}:</label>
             <button 
               type="button"
               onClick={() => setNewSource({...newSource, is_ai_mode: false})}
               className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${!newSource.is_ai_mode ? 'bg-primary text-secondary font-bold' : 'bg-white/5 hover:bg-white/10'}`}
             >
-              URL Download
+              {t('url_download')}
             </button>
             <button 
               type="button"
               onClick={() => setNewSource({...newSource, is_ai_mode: true})}
               className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${newSource.is_ai_mode ? 'bg-primary text-secondary font-bold' : 'bg-white/5 hover:bg-white/10'}`}
             >
-              AI Prompt (Gemini + ElevenLabs)
+              {t('ai_prompt_type')}
             </button>
           </div>
 
@@ -312,7 +312,7 @@ const AdminPanel = ({ token }) => {
                 className="input-field"
                 required
               >
-                <option value="">Select AI Voice...</option>
+                <option value="">{t('select_voice')}</option>
                 {voices.map(voice => (
                   <option key={voice.voice_id} value={voice.voice_id}>
                     {voice.name} ({voice.labels?.accent || voice.category})
@@ -342,7 +342,7 @@ const AdminPanel = ({ token }) => {
 
           {newSource.is_ai_mode ? (
             <textarea
-              placeholder="Enter AI Prompt (e.g., 'Generate a 30-second daily news highlight for Radio Garda...')"
+              placeholder={t('enter_prompt')}
               value={newSource.prompt_text}
               onChange={e => setNewSource({...newSource, prompt_text: e.target.value})}
               className="input-field w-full h-20"
@@ -385,7 +385,7 @@ const AdminPanel = ({ token }) => {
               className="input-field w-full"
               required
             >
-              <option value="">Select Target Station...</option>
+              <option value="">{t('target_station')}</option>
               {stations.map(s => (
                 <option key={s.id} value={s.id}>{s.display_name}</option>
               ))}
@@ -397,7 +397,7 @@ const AdminPanel = ({ token }) => {
               <label className="text-[10px] text-dim uppercase px-1">{t('minute')}</label>
               <input
                 type="text"
-                placeholder="Minute (0-59, *)"
+                placeholder={t('minute')}
                 value={newSource.schedule_minute}
                 onChange={e => setNewSource({...newSource, schedule_minute: e.target.value})}
                 className="input-field w-full"
@@ -408,7 +408,7 @@ const AdminPanel = ({ token }) => {
               <label className="text-[10px] text-dim uppercase px-1">{t('hour')}</label>
               <input
                 type="text"
-                placeholder="Hour (0-23, *)"
+                placeholder={t('hour')}
                 value={newSource.schedule_hour}
                 onChange={e => setNewSource({...newSource, schedule_hour: e.target.value})}
                 className="input-field w-full"
@@ -419,7 +419,7 @@ const AdminPanel = ({ token }) => {
               <label className="text-[10px] text-dim uppercase px-1">{t('days')}</label>
               <input
                 type="text"
-                placeholder="Days (0-6, *)"
+                placeholder={t('days')}
                 value={newSource.schedule_day_of_week}
                 onChange={e => setNewSource({...newSource, schedule_day_of_week: e.target.value})}
                 className="input-field w-full"
@@ -450,10 +450,10 @@ const AdminPanel = ({ token }) => {
             <thead>
               <tr className="text-dim text-xs uppercase border-b border-white/5">
                 <th className="pb-3 px-2 font-medium">{t('source_name')}</th>
-                <th className="pb-3 px-2 font-medium">Schedule</th>
-                <th className="pb-3 px-2 font-medium">Source / Prompt</th>
-                <th className="pb-3 px-2 font-medium">File</th>
-                <th className="pb-3 px-2 font-medium text-right">Actions</th>
+                <th className="pb-3 px-2 font-medium">{t('schedule')}</th>
+                <th className="pb-3 px-2 font-medium">{t('source_prompt')}</th>
+                <th className="pb-3 px-2 font-medium">{t('file')}</th>
+                <th className="pb-3 px-2 font-medium text-right">{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -512,7 +512,7 @@ const AdminPanel = ({ token }) => {
       <div className="glass-card p-6">
         <div className="flex items-center gap-3 mb-6">
           <RefreshCw className={`text-primary ${loadingSettings ? 'animate-spin' : ''}`} />
-          <h2 className="text-xl font-semibold">System Settings (API Keys)</h2>
+          <h2 className="text-xl font-semibold">{t('admin_settings')}</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

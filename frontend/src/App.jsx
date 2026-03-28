@@ -145,7 +145,7 @@ function App() {
             <div>
               <h1 className="font-bold text-xl leading-none">{t('app_title')}</h1>
               <span className="text-[10px] text-dim font-semibold uppercase tracking-widest">
-                Welcome, {user.username}
+                {t('welcome')}, {user.username}
               </span>
             </div>
           </div>
@@ -157,20 +157,20 @@ function App() {
                   onClick={() => setActiveTab('dashboard')}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${activeTab === 'dashboard' ? 'bg-primary text-white' : 'text-dim hover:text-white'}`}
                 >
-                  <LayoutDashboard size={16} /> Dashboard
+                  <LayoutDashboard size={16} /> {t('dashboard')}
                 </button>
                 <button
                   onClick={() => setActiveTab('admin')}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${activeTab === 'admin' ? 'bg-primary text-white' : 'text-dim hover:text-white'}`}
                 >
-                  <Settings size={16} /> Admin
+                  <Settings size={16} /> {t('admin')}
                 </button>
               </div>
             )}
 
             {activeTab === 'dashboard' && (
               <div className="nav-pill hidden md:flex">
-                <span className="text-[10px] font-bold text-dim uppercase tracking-tighter">Station</span>
+                <span className="text-[10px] font-bold text-dim uppercase tracking-tighter">{t('station')}</span>
                 <select 
                   value={station} 
                   onChange={(e) => setStation(e.target.value)}
