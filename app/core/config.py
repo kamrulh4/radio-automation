@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     # Environment
     DEBUG: bool = False
     
+    # CORS
+    CORS_ORIGINS: List[str] = ["*"]
+    
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 settings = Settings()
