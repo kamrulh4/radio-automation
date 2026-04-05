@@ -86,11 +86,16 @@ async def generate_speech(request: TTSRequest, current_user: DBUser = Depends(ge
 @router.post("/generate-ai-text")
 async def generate_ai_text(request: AIPromptRequest, current_user: DBUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """Generates text based on a prompt using Gemini (DJs & Admins)"""
-    db_key = await SettingsService.get_setting(db, "GEMINI_API_KEY")
-    gemini = GeminiService(api_key=db_key)
-    
     try:
+        db_key = await SettingsService.get_setting(db, "GEMINI_API_KEY")
+        if not db_key:
+             raise HTTPException(status_code=400, detail="Gemini API Key missing in settings")
+             
+        gemini = GeminiService(api_key=db_key)
         generated_text = gemini.generate_text(request.prompt)
         return {"status": "success", "text": generated_text}
+    except HTTPException as he:
+        raise he
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"AI Generation Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")

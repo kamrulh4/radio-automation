@@ -40,7 +40,9 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
       setAiPrompt('');
       setStatus({ type: 'success', msg: t('success') });
     } catch (err) {
-      setStatus({ type: 'error', msg: t('error') });
+      console.error("AI Generation Error:", err);
+      const msg = err.response?.data?.detail || err.message || t('error');
+      setStatus({ type: 'error', msg: msg });
     } finally {
       setGeneratingText(false);
     }
@@ -54,10 +56,14 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
       await generateTTS({ text, voice_name: voice, station });
       setStatus({ type: 'success', msg: t('success') });
       setText('');
-      loadData();
+       // Refresh usage
+      const usageRes = await getUsage();
+      setUsage(usageRes.data);
       if (onGenerateSuccess) onGenerateSuccess();
     } catch (err) {
-      setStatus({ type: 'error', msg: t('error') });
+      console.error("TTS Error:", err);
+      const msg = err.response?.data?.detail || err.message || t('error');
+      setStatus({ type: 'error', msg: msg });
     } finally {
       setLoading(false);
     }
