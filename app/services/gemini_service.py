@@ -9,9 +9,9 @@ class GeminiService:
         self.api_key = api_key or settings.GEMINI_API_KEY
         self.client = None
         if self.api_key:
-            self.client = genai.Client(api_key=self.api_key, http_options={'api_version': 'v1'})
+            self.client = genai.Client(api_key=self.api_key, http_options={'api_version': 'v1beta'})
             
-    def generate_text(self, prompt: str, model_name: str = 'gemini-2.0-flash') -> str:
+    def generate_text(self, prompt: str, model_name: str = 'gemini-flash-latest') -> str:
         """Generate text using Gemini model"""
         if not self.api_key or not self.client:
             raise Exception("Gemini API key not configured")
