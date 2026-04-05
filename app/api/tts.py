@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import Optional, Dict, List
 from .auth import get_current_user
 from ..services.elevenlabs_service import ElevenLabsService
+from ..services.gemini_service import GeminiService
 from ..services.file_service import FileService
 from ..services.settings_service import SettingsService
 from ..db.models import User as DBUser, Station as DBStation
@@ -23,6 +24,9 @@ class TTSRequest(BaseModel):
     filename: Optional[str] = None
     stability: float = 0.5
     similarity: float = 0.5
+
+class AIPromptRequest(BaseModel):
+    prompt: str
 
 @router.get("/voices")
 async def get_voices(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
@@ -77,5 +81,16 @@ async def generate_speech(request: TTSRequest, current_user: DBUser = Depends(ge
             "filename": os.path.basename(filepath),
             "url": f"/public/{request.station}/{os.path.basename(filepath)}"
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+@router.post("/generate-ai-text")
+async def generate_ai_text(request: AIPromptRequest, current_user: DBUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Generates text based on a prompt using Gemini (DJs & Admins)"""
+    db_key = await SettingsService.get_setting(db, "GEMINI_API_KEY")
+    gemini = GeminiService(api_key=db_key)
+    
+    try:
+        generated_text = gemini.generate_text(request.prompt)
+        return {"status": "success", "text": generated_text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

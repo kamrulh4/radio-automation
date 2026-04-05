@@ -62,7 +62,10 @@ const resources = {
       "select_assigned_station": "Select Assigned Station...",
       "active": "Active",
       "inactive": "Inactive",
-      "none": "None"
+      "none": "None",
+      "ai_assistant": "AI Script Assistant",
+      "ai_prompt_placeholder": "Describe what you want the AI to write (e.g. 'Write a 20-second intro for the morning news')...",
+      "generate_text": "Generate AI Text"
     }
   },
   it: {
@@ -124,7 +127,10 @@ const resources = {
       "select_assigned_station": "Seleziona Stazione Assegnata...",
       "active": "Attiva",
       "inactive": "Inattiva",
-      "none": "Nessuna"
+      "none": "Nessuna",
+      "ai_assistant": "Assistente AI per Script",
+      "ai_prompt_placeholder": "Descrivi cosa vuoi che l'IA scriva (es. 'Scrivi un'introduzione di 20 secondi per le notizie del mattino')...",
+      "generate_text": "Genera Testo con IA"
     }
   }
 };

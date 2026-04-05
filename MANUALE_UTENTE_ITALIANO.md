@@ -35,11 +35,15 @@ La piattaforma offre un set completo di strumenti per la gestione quotidiana di 
 ## 📊 3. Dashboard DJ (Operazioni Quotidiane)
 
 ### 🎙️ Generazione Vocale AI (TTS)
-1.  Seleziona la stazione (se ne gestisci più di una).
-2.  Inserisci il testo per il segmento radiofonico.
-3.  Scegli una voce tra quelle disponibili nel tuo account ElevenLabs.
-4.  Clicca su **"Genera Audio"**.
-5.  Il file verrà salvato e apparirà nella **Lista File** pronto per essere usato.
+1.  Seleziona la **Stazione** (se ne gestisci più di una).
+2.  **🆕 Assistente AI per Script**: Se non hai ancora un testo pronto, usa il nuovo box "Assistente AI":
+    -   Scrivi una breve descrizione (es. *"Scrivi un'introduzione energica per il programma del pomeriggio"*).
+    -   Clicca su **Genera Testo con IA**.
+    -   Il testo apparirà automaticamente nel modulo sottostante.
+3.  Seleziona la **Voce** desiderata.
+4.  Inserisci o modifica il **Testo** da convertire.
+5.  Clicca su **Genera Audio**.
+6.  Il file verrà creato istantaneamente e sarà visibile nella lista dei file della stazione.
 
 ### 📥 Download Manuali
 Se hai bisogno di aggiornare i contenuti fuori dall'orario programmato:
@@ -76,6 +80,32 @@ Per garantire che **RadioDJ** riproduca sempre l'ultimo contenuto senza interven
 
 ### **Visualizzazione Stato**
 Nella dashboard è presente una lista file che mostra l'orario esatto dell'ultimo aggiornamento per ogni file, permettendo di verificare a colpo d'occhio se le automazioni sono andate a buon fine.
+
+---
+
+## 🔑 6. Configurazione Chiavi API (Google Gemini)
+
+Per utilizzare le funzioni di intelligenza artificiale per generare testi (come le notizie personalizzate), è necessario inserire una chiave API di Google Gemini.
+
+1.  **Ottenere la Chiave**: Vai su [Google AI Studio](https://aistudio.google.com/) e crea una nuova "API Key".
+2.  **Inserire la Chiave**:
+    -   Accedi al **Pannello Admin** nella dashboard.
+    -   Scorri fino alla sezione **Impostazioni di Sistema** (System Settings).
+    -   Inserisci la chiave nel campo **Google Gemini API Key**.
+    -   La chiave verrà salvata automaticamente e sarà pronta all'uso.
+
+---
+
+## 📰 7. Esempi di Contenuti IA (News, Meteo, Oroscopo)
+
+Il sistema è flessibile: puoi creare infinite sorgenti automatiche. Ecco alcuni esempi di prompt che puoi usare:
+
+-   **Notizie Locali**: *"Trova le ultime notizie sul Veneto di oggi, riassumile in 5 punti e crea un testo per uno speaker radiofonico di 2 minuti."*
+-   **Meteo**: *"Genera le previsioni meteo per domani in Lombardia, tono amichevole e solare."*
+-   **Oroscopo del Giorno**: *"Genera un breve oroscopo del giorno per tutti i segni zodiacali, stile moderno e rapido (massimo 10 secondi per segno)."*
+-   **Traffico**: *"Cerca informazioni sul traffico in tempo reale sulla A4 e riassumile."*
+
+Ogni sorgente creerà un file audio separato nella cartella della stazione, pronto per essere trasmesso da RadioDJ.
 
 ---
 

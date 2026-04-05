@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Mic, Send, Sparkles, AlertCircle } from 'lucide-react';
+import { Mic, Send, Sparkles, AlertCircle, Wand2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getVoices, getUsage, generateTTS } from '../api';
+import { getVoices, getUsage, generateTTS, generateAIText } from '../api';
 
 const TTSPanel = ({ station, onGenerateSuccess }) => {
   const { t } = useTranslation();
   const [text, setText] = useState('');
+  const [aiPrompt, setAiPrompt] = useState('');
   const [voices, setVoices] = useState([]);
   const [voice, setVoice] = useState('');
   const [usage, setUsage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [generatingText, setGeneratingText] = useState(false);
   const [status, setStatus] = useState({ type: '', msg: '' });
 
   useEffect(() => {
@@ -25,6 +27,22 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
       setUsage(usageRes.data);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleGenerateText = async () => {
+    if (!aiPrompt) return;
+    setGeneratingText(true);
+    setStatus({ type: '', msg: '' });
+    try {
+      const res = await generateAIText(aiPrompt);
+      setText(res.data.text);
+      setAiPrompt('');
+      setStatus({ type: 'success', msg: t('success') });
+    } catch (err) {
+      setStatus({ type: 'error', msg: t('error') });
+    } finally {
+      setGeneratingText(false);
     }
   };
 
@@ -77,6 +95,32 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
             </p>
           </div>
         )}
+      </div>
+
+      <div className="mb-8 p-4 bg-primary/5 rounded-2xl border border-primary/10 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Wand2 size={40} className="text-primary" />
+        </div>
+        <label className="text-[10px] font-black uppercase tracking-widest text-primary mb-3 block">
+            🚀 {t('ai_assistant')}
+        </label>
+        <div className="flex flex-col sm:flex-row gap-3">
+            <input 
+                type="text"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder={t('ai_prompt_placeholder')}
+                className="input-field flex-1 bg-white/5 border-white/10"
+                onKeyPress={(e) => e.key === 'Enter' && handleGenerateText()}
+            />
+            <button 
+                onClick={handleGenerateText}
+                disabled={generatingText || !aiPrompt}
+                className="btn-primary py-2 px-6 text-sm"
+            >
+                {generatingText ? '...' : t('generate_text')}
+            </button>
+        </div>
       </div>
 
       <form onSubmit={handleGenerate} className="space-y-4">
