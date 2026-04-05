@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from typing import List
 import asyncio
 
 from ..db.database import get_db
 from ..db.models import DownloadSource as DBSource
 from ..db.schemas import DownloadSourceCreate, DownloadSource
-from .auth import get_admin_user
+from .auth import get_admin_user, get_current_user
+from ..db.models import User as DBUser
 from ..services.download_service import DownloadService
 
 router = APIRouter()
@@ -16,6 +17,18 @@ downloader = DownloadService()
 @router.get("/", response_model=List[DownloadSource])
 async def list_sources(db: AsyncSession = Depends(get_db), admin=Depends(get_admin_user)):
     result = await db.execute(select(DBSource))
+    return result.scalars().all()
+
+@router.get("/station/{station_id}", response_model=List[DownloadSource])
+async def list_station_sources(station_id: int, db: AsyncSession = Depends(get_db), current_user: DBUser = Depends(get_current_user)):
+    """Allows DJs to see sources for their assigned station"""
+    # If DJ, only allow their own station
+    if current_user.role == "dj" and current_user.assigned_station_id != station_id:
+        raise HTTPException(status_code=403, detail="Not authorized for this station")
+        
+    result = await db.execute(
+        select(DBSource).where(and_(DBSource.station_id == station_id, DBSource.is_active == True))
+    )
     return result.scalars().all()
 
 @router.post("/", response_model=DownloadSource)
@@ -52,11 +65,15 @@ async def delete_source(source_id: int, db: AsyncSession = Depends(get_db), admi
     return {"status": "success", "message": "Source deleted"}
 
 @router.post("/{source_id}/trigger")
-async def trigger_source(source_id: int, db: AsyncSession = Depends(get_db), admin=Depends(get_admin_user)):
+async def trigger_source(source_id: int, db: AsyncSession = Depends(get_db), current_user: DBUser = Depends(get_current_user)):
     result = await db.execute(select(DBSource).where(DBSource.id == source_id))
     source = result.scalars().first()
     if not source:
         raise HTTPException(status_code=404, detail="Source not found")
+        
+    # Security: If DJ, must match assigned station
+    if current_user.role == "dj" and current_user.assigned_station_id != source.station_id:
+        raise HTTPException(status_code=403, detail="Not authorized for this source")
     
     from ..db.models import Station as DBStation
     st_result = await db.execute(select(DBStation).where(DBStation.id == source.station_id))

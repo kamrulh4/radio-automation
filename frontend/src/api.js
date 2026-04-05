@@ -39,6 +39,7 @@ export const uploadFile = (station, file) => {
 
 // Custom Download Sources
 export const listSources = () => api.get('/sources');
+export const getStationSources = (stationId) => api.get(`/sources/station/${stationId}`);
 export const createSource = (data) => api.post('/sources', data);
 export const deleteSource = (id) => api.delete(`/sources/${id}`);
 export const triggerSource = (id) => api.post(`/sources/${id}/trigger`);
