@@ -1,8 +1,13 @@
 import axios from 'axios';
 
-export const BASE_URL = 'http://localhost:8000';
+// In production, we use a relative path so Nginx handles the routing.
+// Locally, we use the Port 8003 (updated from 8000 to match VPS).
+export const BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:8003' 
+  : ''; 
+
 const api = axios.create({
-  baseURL: `${BASE_URL}/api`,
+  baseURL: BASE_URL ? `${BASE_URL}/api` : '/api',
 });
 
 // Add interceptor for JWT
