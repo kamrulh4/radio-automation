@@ -9,25 +9,25 @@ echo "------------------------------------------------"
 echo "🚀 Starting Radio Automation Setup..."
 echo "------------------------------------------------"
 
-# 1. Verification of Python 3.12 (User installed manually)
-if ! command -v python3.12 &> /dev/null
+# 1. Verification of Python 3.14 (User installed manually)
+if ! command -v python3.14 &> /dev/null
 then
-    echo "❌ Python 3.12 is not installed. Please run: sudo apt-get update && sudo apt-get install python3.12 python3.12-venv"
+    echo "❌ Python 3.14 is not installed. Please install it first!"
     exit 1
 fi
-echo "🐍 Python 3.12 detected. Continuing..."
+echo "🐍 Python 3.14 detected. Continuing..."
 
 # 2. Setup Virtual Environment (Safe method for portable python)
 echo "🧪 Creating Python Virtual Environment..."
 # Some portable versions don't have ensurepip, so we skip it during creation
-python3.12 -m venv venv --without-pip
+python3.14 -m venv venv --without-pip
 source venv/bin/activate
 
 # Manually install pip if it's missing
 if ! command -v pip &> /dev/null
 then
     echo "📦 Pip is missing in venv. Installing manually..."
-    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.14
 fi
 
 pip install --upgrade pip
