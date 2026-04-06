@@ -17,10 +17,19 @@ then
 fi
 echo "🐍 Python 3.12 detected. Continuing..."
 
-# 2. Setup Virtual Environment
+# 2. Setup Virtual Environment (Safe method for portable python)
 echo "🧪 Creating Python Virtual Environment..."
-python3.12 -m venv venv
+# Some portable versions don't have ensurepip, so we skip it during creation
+python3.12 -m venv venv --without-pip
 source venv/bin/activate
+
+# Manually install pip if it's missing
+if ! command -v pip &> /dev/null
+then
+    echo "📦 Pip is missing in venv. Installing manually..."
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12
+fi
+
 pip install --upgrade pip
 pip install -r requirements.txt
 
