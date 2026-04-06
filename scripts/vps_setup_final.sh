@@ -44,7 +44,7 @@ After=network.target
 User=$USERNAME
 WorkingDirectory=$WORKDIR
 Environment="PATH=$WORKDIR/venv/bin"
-ExecStart=$WORKDIR/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001
+ExecStart=$WORKDIR/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8003
 Restart=always
 
 [Install]

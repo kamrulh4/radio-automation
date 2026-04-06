@@ -6,5 +6,5 @@ if __name__ == "__main__":
     # Ensure storage exists before starting
     ensure_storage()
     
-    # Start the server
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    # Start the server (Port 8003 used to avoid VPS conflicts with Liquidsoap)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8003, reload=True)
