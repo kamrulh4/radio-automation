@@ -9,10 +9,14 @@ echo "------------------------------------------------"
 echo "🚀 Starting Radio Automation Setup..."
 echo "------------------------------------------------"
 
-# 1. Update & Install Python 3.12 (Modern & Stable)
-echo "🐍 Installing Python 3.12..."
+# 1. Update & Install Python 3.12 (Fixed GPG retrieval for VPS firewalls)
+echo "🐍 Installing Python 3.12 (using secure key retrieval)..."
 sudo apt update
-sudo apt install -y software-properties-common
+sudo apt install -y gnupg2
+# Manually add the key via HTTPS to avoid keyserver timeouts
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F1D693057436DD7B || \
+sudo gpg --no-default-keyring --keyring /etc/apt/trusted.gpg.d/deadsnakes.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F1D693057436DD7B
+
 sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt update
 sudo apt install -y python3.12 python3.12-venv python3.12-dev
