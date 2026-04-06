@@ -9,15 +9,18 @@ echo "------------------------------------------------"
 echo "🚀 Starting Radio Automation Setup..."
 echo "------------------------------------------------"
 
-# 1. Update & Install Python 3.12 (Fixed GPG retrieval for VPS firewalls)
-echo "🐍 Installing Python 3.12 (using secure key retrieval)..."
+# 1. Update & Install Python 3.12 (Hard Manual Method - Bypasses broken GPG services)
+echo "🐍 Installing Python 3.12 (Manual Repository Setup)..."
 sudo apt update
-sudo apt install -y gnupg2
-# Manually add the key via HTTPS to avoid keyserver timeouts
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F1D693057436DD7B || \
-sudo gpg --no-default-keyring --keyring /etc/apt/trusted.gpg.d/deadsnakes.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F1D693057436DD7B
+sudo apt install -y curl gnupg2
 
-sudo add-apt-repository -y ppa:deadsnakes/ppa
+# Download the key directly to its own keyring file to avoid GPG dirmngr errors
+curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF1D693057436DD7B" | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/deadsnakes.gpg --overwrite
+sudo chmod 644 /etc/apt/trusted.gpg.d/deadsnakes.gpg
+
+# Manually create the sources list file instead of using add-apt-repository
+echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/deadsnakes.list
+
 sudo apt update
 sudo apt install -y python3.12 python3.12-venv python3.12-dev
 
