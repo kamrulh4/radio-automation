@@ -19,19 +19,19 @@ echo "🐍 Python 3.14 detected. Continuing..."
 
 # 2. Setup Virtual Environment (Safe method for portable python)
 echo "🧪 Creating Python Virtual Environment..."
-# Some portable versions don't have ensurepip, so we skip it during creation
+rm -rf venv
 python3.14 -m venv venv --without-pip
-source venv/bin/activate
+# Use venv python EXPLICITLY to avoid system pip interference
+VENV_PYTHON="$(pwd)/venv/bin/python"
+VENV_PIP="$(pwd)/venv/bin/pip"
 
-# Manually install pip if it's missing
-if ! command -v pip &> /dev/null
-then
-    echo "📦 Pip is missing in venv. Installing manually..."
-    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.14
-fi
+# Install pip directly into the venv
+echo "📦 Installing pip into venv..."
+curl -sS https://bootstrap.pypa.io/get-pip.py | "$VENV_PYTHON"
 
-pip install --upgrade pip
-pip install -r requirements.txt
+# Use the venv pip directly (never the system pip)
+"$VENV_PIP" install --upgrade pip
+"$VENV_PIP" install -r requirements.txt
 
 # 3. Ensure Storage Permissions
 echo "📂 Setting up storage permissions..."
