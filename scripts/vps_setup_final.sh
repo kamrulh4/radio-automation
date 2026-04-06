@@ -15,7 +15,7 @@ sudo apt update
 sudo apt install -y curl gnupg2
 
 # Download the key directly to its own keyring file to avoid GPG dirmngr errors
-curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF1D693057436DD7B" | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/deadsnakes.gpg --overwrite
+curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF1D693057436DD7B" | sudo gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/deadsnakes.gpg > /dev/null
 sudo chmod 644 /etc/apt/trusted.gpg.d/deadsnakes.gpg
 
 # Manually create the sources list file instead of using add-apt-repository
