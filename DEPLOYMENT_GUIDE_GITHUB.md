@@ -44,12 +44,42 @@ sudo lsof -i :8000
     chmod +x scripts/vps_setup_final.sh
     ./scripts/vps_setup_final.sh
     ```
-    *This will install Python 3.12, set up the virtual environment, and start the background service.*
+    *This will install Python 3.12, set up the virtual environment, and start the background service on port **8003**.*
 
 ---
 
 ### Step 4: Final Nginx Web Access (On VPS)
-Once you give me the output from **Step 2**, I will generate a custom `radio_automation.conf` file for you to paste into `/etc/nginx/sites-available/`.
+We will use Port 8003 to avoid conflicts with your 3 existing radio systems. 
+
+1.  **Create the Nginx config**:
+    ```bash
+    sudo nano /etc/nginx/sites-available/radio_automation.conf
+    ```
+2.  **Paste this content**:
+    ```nginx
+    server {
+        listen 80;
+        server_name dj.webradio.bz; 
+
+        root /home/administrator/radio-automation/frontend/dist;
+        index index.html;
+
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        location /api {
+            proxy_pass http://localhost:8003;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location /public {
+            alias /home/administrator/radio-automation/storage/public;
+            autoindex on;
+        }
+    }
+    ```
 
 ---
 
