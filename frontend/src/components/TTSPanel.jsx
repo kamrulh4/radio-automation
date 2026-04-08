@@ -13,6 +13,7 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
   const [usage, setUsage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [generatingText, setGeneratingText] = useState(false);
+  const [targetFilename, setTargetFilename] = useState('');
   const [status, setStatus] = useState({ type: '', msg: '' });
 
   useEffect(() => {
@@ -53,9 +54,15 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
     setLoading(true);
     setStatus({ type: '', msg: '' });
     try {
-      await generateTTS({ text, voice_name: voice, station });
+      await generateTTS({ 
+        text, 
+        voice_name: voice, 
+        station,
+        filename: targetFilename || null 
+      });
       setStatus({ type: 'success', msg: t('success') });
       setText('');
+      setTargetFilename('');
        // Refresh usage
       const usageRes = await getUsage();
       setUsage(usageRes.data);
@@ -136,6 +143,17 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
             <select value={voice} onChange={(e) => setVoice(e.target.value)} className="input-field">
               {voices.map(v => <option key={v.voice_id} value={v.name} className="bg-slate-900">{v.name}</option>)}
             </select>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="label">{t('target_filename')}</label>
+            <input 
+              type="text" 
+              value={targetFilename} 
+              onChange={(e) => setTargetFilename(e.target.value)} 
+              placeholder={t('target_filename_hint')}
+              className="input-field"
+            />
           </div>
         </div>
 

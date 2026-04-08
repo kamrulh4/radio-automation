@@ -65,7 +65,9 @@ const resources = {
       "none": "None",
       "ai_assistant": "AI Script Assistant",
       "ai_prompt_placeholder": "Describe what you want the AI to write (e.g. 'Write a 20-second intro for the morning news')...",
-      "generate_text": "Generate AI Text"
+      "generate_text": "Generate AI Text",
+      "target_filename": "Target Filename (optional)",
+      "target_filename_hint": "e.g. horoscope.mp3 (will overwrite existing)"
     }
   },
   it: {
@@ -130,7 +132,9 @@ const resources = {
       "none": "Nessuna",
       "ai_assistant": "Assistente AI per Script",
       "ai_prompt_placeholder": "Descrivi cosa vuoi che l'IA scriva (es. 'Scrivi un'introduzione di 20 secondi per le notizie del mattino')...",
-      "generate_text": "Genera Testo con IA"
+      "generate_text": "Genera Testo con IA",
+      "target_filename": "Nome File Destinazione (opzionale)",
+      "target_filename_hint": "es. oroscopo.mp3 (sovrascriverà l'esistente)"
     }
   }
 };
