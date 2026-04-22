@@ -31,7 +31,7 @@ export const login = async (username, password) => {
 export const getVoices = () => api.get('/tts/voices');
 export const listStations = () => api.get('/stations');
 export const getCurrentUser = () => api.get('/auth/me');
-export const getUsage = () => api.get('/tts/usage');
+
 export const generateTTS = (data) => api.post('/tts/generate', data);
 export const generateAIText = (prompt) => api.post('/tts/generate-ai-text', { prompt });
 export const triggerDownload = (type, station) => api.post(`/downloads/trigger/${type}?station=${station}`);

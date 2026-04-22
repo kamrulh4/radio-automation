@@ -98,7 +98,6 @@ async def scheduled_downloads():
         # 3. Fetch API Keys for AI content
         from .services.settings_service import SettingsService
         gemini_key = await SettingsService.get_setting(session, "GEMINI_API_KEY")
-        elevenlabs_key = await SettingsService.get_setting(session, "ELEVENLABS_API_KEY")
 
         for source in custom_sources:
             if (is_time_to_run(current_minute, source.schedule_minute) and 
@@ -121,8 +120,7 @@ async def scheduled_downloads():
                         is_ai_mode=source.is_ai_mode,
                         prompt_text=source.prompt_text,
                         ai_voice_id=source.ai_voice_id,
-                        gemini_key=gemini_key,
-                        elevenlabs_key=elevenlabs_key
+                        gemini_key=gemini_key
                     )
 
 # Scheduler

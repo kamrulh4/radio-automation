@@ -535,24 +535,7 @@ const AdminPanel = ({ token }) => {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-dim block mb-2">ElevenLabs API Key</label>
-              <div className="flex gap-2">
-                <input
-                  type="password"
-                  placeholder="Enter ElevenLabs Key..."
-                  defaultValue={settings.find(s => s.key === 'ELEVENLABS_API_KEY')?.value || ''}
-                  onBlur={(e) => {
-                    const val = e.target.value;
-                    if (val) handleUpdateSetting('ELEVENLABS_API_KEY', val);
-                  }}
-                  className="input-field flex-1"
-                />
-              </div>
-              <p className="text-[10px] text-dim mt-1 italic">Used for Text-to-Speech conversion.</p>
-            </div>
-          </div>
+
         </div>
 
         <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10">

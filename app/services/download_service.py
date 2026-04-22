@@ -11,7 +11,7 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from .settings_service import SettingsService
-from .elevenlabs_service import ElevenLabsService
+from .google_tts_service import GoogleTTSService
 from .gemini_service import GeminiService
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -136,13 +136,13 @@ class DownloadService:
 
     def download_custom(self, url: str, station: str, output_filename: str, auth: Optional[tuple] = None, max_retries: int = 3, 
                         is_ai_mode: bool = False, prompt_text: Optional[str] = None, ai_voice_id: Optional[str] = None,
-                        gemini_key: Optional[str] = None, elevenlabs_key: Optional[str] = None):
+                        gemini_key: Optional[str] = None):
         """Downloads from URL or Generates from AI Prompt, then saves to station folder"""
         import time
         
         # Phase 3: AI Prompt Mode
         if is_ai_mode and prompt_text:
-            return self._generate_and_save_ai_content(prompt_text, station, output_filename, ai_voice_id, max_retries, gemini_key, elevenlabs_key)
+            return self._generate_and_save_ai_content(prompt_text, station, output_filename, ai_voice_id, max_retries, gemini_key)
         
         # Original: URL Download Mode
         # 1. Replace placeholders (Client requirement #3: Support dynamic patterns)
@@ -182,13 +182,13 @@ class DownloadService:
         return False
 
     def _generate_and_save_ai_content(self, prompt: str, station: str, output_filename: str, voice_id: Optional[str], max_retries: int, 
-                                     gemini_key: Optional[str] = None, elevenlabs_key: Optional[str] = None):
-        """Generates text from Gemini, then audio from ElevenLabs using centralized services"""
+                                     gemini_key: Optional[str] = None):
+        """Generates text from Gemini, then audio from Google TTS using centralized services"""
         import time
         
         # Initialize services with dynamic keys
         gemini = GeminiService(api_key=gemini_key)
-        elevenlabs = ElevenLabsService(api_key=elevenlabs_key)
+        google_tts = GoogleTTSService()
 
         attempts = 0
         while attempts < max_retries:
@@ -200,10 +200,13 @@ class DownloadService:
                 generated_text = gemini.generate_text(prompt)
                 print(f"AI Generated Text: {generated_text[:100]}...")
                 
-                # 2. Generate audio using ElevenLabs
-                audio_content = elevenlabs.generate_speech(
+                # 2. Generate audio using Google TTS
+                audio_content = google_tts.generate_speech(
                     text=generated_text,
-                    voice_id=voice_id or "21m00Tcm4TlvDq8ikWAM" # Fallback to default voice
+                    voice_name=voice_id or "it-IT-Neural2-A", # Fallback to default voice
+                    speaking_rate=1.0,
+                    pitch=0.0,
+                    volume_gain_db=0.0
                 )
                 
                 # 3. Save to storage

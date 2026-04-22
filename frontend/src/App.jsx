@@ -207,14 +207,14 @@ function App() {
             >
               <div className="lg:col-span-7 space-y-8">
                 <TTSPanel station={station} onGenerateSuccess={() => setRefreshKey(prev => prev + 1)} />
+              </div>
+              <div className="lg:col-span-5 space-y-8">
+                <FileList station={station} key={refreshKey} />
                 <DownloadPanel 
                   station={station} 
                   stationId={stations.find(s => s.name === station)?.id}
                   onDownloadSuccess={() => setRefreshKey(prev => prev + 1)} 
                 />
-              </div>
-              <div className="lg:col-span-5">
-                <FileList station={station} key={refreshKey} />
               </div>
             </motion.div>
           ) : (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mic, Send, Sparkles, AlertCircle, Wand2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getVoices, getUsage, generateTTS, generateAIText } from '../api';
+import { getVoices, generateTTS, generateAIText } from '../api';
 
 const TTSPanel = ({ station, onGenerateSuccess }) => {
   const { t } = useTranslation();
@@ -10,10 +10,12 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
   const [aiPrompt, setAiPrompt] = useState('');
   const [voices, setVoices] = useState([]);
   const [voice, setVoice] = useState('');
-  const [usage, setUsage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [generatingText, setGeneratingText] = useState(false);
   const [targetFilename, setTargetFilename] = useState('');
+  const [speakingRate, setSpeakingRate] = useState(1.0);
+  const [pitch, setPitch] = useState(0.0);
+  const [volumeGain, setVolumeGain] = useState(0.0);
   const [status, setStatus] = useState({ type: '', msg: '' });
 
   useEffect(() => {
@@ -22,10 +24,9 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
 
   const loadData = async () => {
     try {
-      const [voicesRes, usageRes] = await Promise.all([getVoices(), getUsage()]);
+      const voicesRes = await getVoices();
       setVoices(voicesRes.data);
       if (voicesRes.data.length > 0 && !voice) setVoice(voicesRes.data[0].name);
-      setUsage(usageRes.data);
     } catch (err) {
       console.error(err);
     }
@@ -58,14 +59,14 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
         text, 
         voice_name: voice, 
         station,
-        filename: targetFilename || null 
+        filename: targetFilename || null,
+        speaking_rate: parseFloat(speakingRate),
+        pitch: parseFloat(pitch),
+        volume_gain_db: parseFloat(volumeGain)
       });
       setStatus({ type: 'success', msg: t('success') });
       setText('');
       setTargetFilename('');
-       // Refresh usage
-      const usageRes = await getUsage();
-      setUsage(usageRes.data);
       if (onGenerateSuccess) onGenerateSuccess();
     } catch (err) {
       console.error("TTS Error:", err);
@@ -76,8 +77,6 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
     }
   };
 
-  const usagePercent = usage ? (usage.character_count / usage.character_limit) * 100 : 0;
-
   return (
     <div className="glass-card p-6 relative overflow-hidden">
       <div className="flex items-center justify-between mb-6">
@@ -87,27 +86,6 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
           </div>
           {t('tts_title')}
         </h2>
-
-        {usage && (
-          <div className="w-48 text-right">
-            <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-1 gap-2">
-              <span className="text-dim whitespace-nowrap">ElevenLabs Usage</span>
-              <span className={usagePercent > 80 ? 'text-red-600' : 'text-indigo-600'}>
-                {Math.round(usagePercent)}%
-              </span>
-            </div>
-            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${usagePercent}%` }}
-                className={`h-full ${usagePercent > 80 ? 'bg-red-500' : 'bg-indigo-500'}`}
-              />
-            </div>
-            <p className="text-[10px] text-dim mt-1 text-right">
-              {usage.character_count.toLocaleString()} / {usage.character_limit.toLocaleString()} chars
-            </p>
-          </div>
-        )}
       </div>
 
       <div className="mb-8 p-4 bg-primary/5 rounded-2xl border border-primary/10 relative overflow-hidden group">
@@ -154,6 +132,21 @@ const TTSPanel = ({ station, onGenerateSuccess }) => {
               placeholder={t('target_filename_hint')}
               className="input-field"
             />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <label className="label">Speed ({parseFloat(speakingRate).toFixed(2)})</label>
+            <input type="range" min="0.25" max="4.0" step="0.05" value={speakingRate} onChange={(e) => setSpeakingRate(e.target.value)} className="w-full accent-primary" />
+          </div>
+          <div className="space-y-2">
+            <label className="label">Pitch ({parseFloat(pitch).toFixed(1)})</label>
+            <input type="range" min="-20.0" max="20.0" step="0.5" value={pitch} onChange={(e) => setPitch(e.target.value)} className="w-full accent-primary" />
+          </div>
+          <div className="space-y-2">
+            <label className="label">Volume Gain (dB) ({parseFloat(volumeGain).toFixed(1)})</label>
+            <input type="range" min="-10.0" max="10.0" step="0.5" value={volumeGain} onChange={(e) => setVolumeGain(e.target.value)} className="w-full accent-primary" />
           </div>
         </div>
 

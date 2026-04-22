@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional, Dict, List
 from .auth import get_current_user
-from ..services.elevenlabs_service import ElevenLabsService
+from ..services.google_tts_service import GoogleTTSService
 from ..services.gemini_service import GeminiService
 from ..services.file_service import FileService
 from ..services.settings_service import SettingsService
@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import os
 
 router = APIRouter()
-elevenlabs = ElevenLabsService()
+google_tts = GoogleTTSService()
 file_service = FileService()
 
 class TTSRequest(BaseModel):
@@ -22,23 +22,16 @@ class TTSRequest(BaseModel):
     voice_name: str
     station: str
     filename: Optional[str] = None
-    stability: float = 0.5
-    similarity: float = 0.5
+    speaking_rate: float = 1.0
+    pitch: float = 0.0
+    volume_gain_db: float = 0.0
 
 class AIPromptRequest(BaseModel):
     prompt: str
 
 @router.get("/voices")
 async def get_voices(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    db_key = await SettingsService.get_setting(db, "ELEVENLABS_API_KEY")
-    elevenlabs = ElevenLabsService(api_key=db_key)
-    return elevenlabs.get_voices()
-
-@router.get("/usage")
-async def get_usage(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    db_key = await SettingsService.get_setting(db, "ELEVENLABS_API_KEY")
-    elevenlabs = ElevenLabsService(api_key=db_key)
-    return elevenlabs.get_user_subscription()
+    return google_tts.get_voices(language_code="it-IT")
 
 @router.post("/generate")
 async def generate_speech(request: TTSRequest, current_user: DBUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
@@ -46,19 +39,17 @@ async def generate_speech(request: TTSRequest, current_user: DBUser = Depends(ge
     if not result.scalars().first():
         raise HTTPException(status_code=400, detail="Invalid station")
         
-    db_key = await SettingsService.get_setting(db, "ELEVENLABS_API_KEY")
-    elevenlabs = ElevenLabsService(api_key=db_key)
-    
-    voice = elevenlabs.get_voice_by_name(request.voice_name)
+    voice = google_tts.get_voice_by_name(request.voice_name)
     if not voice:
         raise HTTPException(status_code=404, detail=f"Voice {request.voice_name} not found")
         
     try:
-        audio_content = elevenlabs.generate_speech(
+        audio_content = google_tts.generate_speech(
             text=request.text,
-            voice_id=voice['voice_id'],
-            stability=request.stability,
-            similarity=request.similarity
+            voice_name=request.voice_name,
+            speaking_rate=request.speaking_rate,
+            pitch=request.pitch,
+            volume_gain_db=request.volume_gain_db
         )
         
         # Generate unique filename if not provided

@@ -5,9 +5,9 @@ import os
 class Settings(BaseSettings):
     """Platform settings and secrets"""
     
-    # ElevenLabs
-    ELEVENLABS_API_KEY: str
+    # AI Services
     GEMINI_API_KEY: str # Phase 3: AI content generation
+    GOOGLE_APPLICATION_CREDENTIALS: Optional[str] = None
     
     # Security
     ADMIN_PASSWORD: str
