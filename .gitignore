@@ -31,3 +31,4 @@ Thumbs.db
 # Logs
 *.log
 service-account.json
+radio_automation.db
